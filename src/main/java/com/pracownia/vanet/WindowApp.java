@@ -31,6 +31,7 @@ public class WindowApp extends Application {
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
     private Simulation simulation;
+    private long startTime;
 
     public static void main(String[] args) {
         launch(args);
@@ -61,7 +62,23 @@ public class WindowApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         simulation.tr.start();
+
+        long startTime = System.currentTimeMillis();
+        double durationTime = ((System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.println(durationTime + "s");
     }
+
+    public void startTimer() {
+        startTime = System.currentTimeMillis();
+        System.out.println("Simulation started");
+    }
+
+    public void stopTimer() {
+        double durationTime = ((System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.println("Duration: "+ durationTime + "s");
+        System.out.println("Simulation stopped");
+    }
+
 
     private void setInterface(Simulation simulation) {
         Button showRangeButton = new Button("Show Range");
@@ -81,6 +98,7 @@ public class WindowApp extends Application {
         startSimulation.setLayoutY(310.);
         startSimulation.setOnAction(e -> {
             simulation.setSimulationRunning(true);
+            startTimer();
         });
 
         Button stopSimulation = new Button("Stop simulation");
@@ -88,6 +106,7 @@ public class WindowApp extends Application {
         stopSimulation.setLayoutY(340.);
         stopSimulation.setOnAction(e -> {
             simulation.setSimulationRunning(false);
+            stopTimer();
         });
 
         Button addHackerVehicle = new Button("Add hacker vehicle");

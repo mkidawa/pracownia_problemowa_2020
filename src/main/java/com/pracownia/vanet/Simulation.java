@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
 
 @Data
 public class Simulation implements Runnable {
@@ -28,11 +29,12 @@ public class Simulation implements Runnable {
         rangeList = new ArrayList<>();
         labelList = new ArrayList<>();
         stationaryCirclelist = new ArrayList<>();
-        this.simulationRunning = true;
+        this.simulationRunning = false;
         tr = new Thread(this);
     }
 
     public void run() {
+
         while (true) {
             if (simulationRunning) {
                 updateVehiclesPosition();
