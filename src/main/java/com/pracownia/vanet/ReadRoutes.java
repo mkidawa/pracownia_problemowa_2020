@@ -1,13 +1,5 @@
 package com.pracownia.vanet;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class ReadRoutes {
 
 	/*private String fileName;
@@ -22,7 +14,8 @@ public class ReadRoutes {
 		try (Stream<Path> paths = Files.walk(Paths.get(fileName))) {
 			paths
 					.filter(o -> o.toString().endsWith(".txt"))
-					.forEach(t -> routes.add(getRoute(fileName + "/" + t.getFileName().toString())));
+					.forEach(t -> routes.add(getRoute(fileName + "/" + t.getFileName().toString()
+					)));
 
 
 			return routes;

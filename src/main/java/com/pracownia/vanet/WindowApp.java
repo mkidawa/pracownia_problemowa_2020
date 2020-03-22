@@ -1,21 +1,22 @@
 package com.pracownia.vanet;
 
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-import java.util.stream.Collectors;
 
 public class WindowApp extends Application {
 
@@ -54,7 +55,6 @@ public class WindowApp extends Application {
 
         setInterface(simulation);
 
-
         Scene scene = new Scene(root, 1400, 850);
 
         primaryStage.setTitle("Vanet");
@@ -62,7 +62,6 @@ public class WindowApp extends Application {
         primaryStage.show();
         simulation.tr.start();
     }
-
 
     private void setInterface(Simulation simulation) {
         Button showRangeButton = new Button("Show Range");
@@ -109,7 +108,9 @@ public class WindowApp extends Application {
         saveVehicleButton.setLayoutX(950.0);
         saveVehicleButton.setLayoutY(280.);
         saveVehicleButton.setOnAction(e -> {
-            Vehicle v = simulation.getMap().getVehicles().get(Integer.parseInt(this.vehIdField.getText()));
+            Vehicle v = simulation.getMap()
+                    .getVehicles()
+                    .get(Integer.parseInt(this.vehIdField.getText()));
             v.setSpeed(Double.parseDouble(this.speedField.getText()));
             v.setTrustLevel(Double.parseDouble(this.trustLevelField.getText()));
         });
@@ -120,7 +121,6 @@ public class WindowApp extends Application {
         clearNotSafe.setOnAction(e -> {
             simulation.deleteUnsafeCircles();
         });
-
 
         // Vehicle informations.
         this.trustLevelField = new TextField();
@@ -146,7 +146,6 @@ public class WindowApp extends Application {
         Label vehIdLabel = new Label("Veh id");
         vehIdLabel.setLayoutX(950.0);
         vehIdLabel.setLayoutY(550.0);
-
 
         this.connPointsField = new TextField();
         connPointsField.setLayoutX(950.0);
@@ -178,17 +177,16 @@ public class WindowApp extends Application {
         hackerVehiclesList.setMaxHeight(100);
         hackerVehiclesList.setMaxWidth(175.0);
         hackerVehiclesList.setItems(simulation.getMap().getVehicles());
-//.filtered(x->!x.safe)
-
+        //.filtered(x->!x.safe)
 
         seeThrough = new CheckBox("Widac?");
         seeThrough.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-                if(t1) {
+            public void changed(ObservableValue<? extends Boolean> observableValue,
+                                Boolean aBoolean, Boolean t1) {
+                if (t1) {
                     simulation.here = Color.TRANSPARENT;
-                }
-                else {
+                } else {
                     simulation.here = Color.RED;
                 }
             }
@@ -223,8 +221,8 @@ public class WindowApp extends Application {
         vehiclesAmountField.setLayoutY(240.0);
         vehiclesAmountField.setText("10");
 
-        changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField.getText())));
-
+        changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField
+                .getText())));
 
         showRangeButton.setOnAction(e -> {
             isRangeRendered = !isRangeRendered;
@@ -244,7 +242,8 @@ public class WindowApp extends Application {
 
         spawnVehiclesButton.setOnAction(e -> {
             simulation.getMap().addVehicles(Integer.parseInt(vehiclesAmountField.getText()));
-            shapesCreator.setVehicleCircles(simulation, Integer.parseInt(vehiclesAmountField.getText()));
+            shapesCreator.setVehicleCircles(simulation,
+                    Integer.parseInt(vehiclesAmountField.getText()));
             shapesCreator.setLabels(simulation, Integer.parseInt(vehiclesAmountField.getText()));
         });
 
@@ -279,6 +278,5 @@ public class WindowApp extends Application {
                         hackerVehiclesList,
                         seeThrough);
     }
-
 
 }

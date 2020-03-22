@@ -9,8 +9,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.io.IOException;
-import java.util.logging.Level;
 
 @Data
 public class Simulation implements Runnable {
@@ -34,7 +32,6 @@ public class Simulation implements Runnable {
         tr = new Thread(this);
     }
 
-
     public void run() {
         while (true) {
             if (simulationRunning) {
@@ -56,12 +53,14 @@ public class Simulation implements Runnable {
 
     public void checkCopies() {
         int size = map.getVehicles().size();
-        for(int i = 0; i<map.getVehicles().size(); i++) {
-            for(int j = i+1; j < map.getVehicles().size(); j++) {
-                if( map.getVehicles().get(i).getId() == map.getVehicles().get(j).getId()) {
+        for (int i = 0; i < map.getVehicles().size(); i++) {
+            for (int j = i + 1; j < map.getVehicles().size(); j++) {
+                if (map.getVehicles().get(i).getId() == map.getVehicles().get(j).getId()) {
                     map.getVehicles().get(j).setNotSafe("KLON");
                     map.getVehicles().get(i).setNotSafe("KLON");
-                    System.out.println(map.getVehicles().get(i).getId() + " ... " + map.getVehicles().get(j).getId());
+                    System.out.println(map.getVehicles()
+                            .get(i)
+                            .getId() + " ... " + map.getVehicles().get(j).getId());
                 }
             }
         }
@@ -69,11 +68,11 @@ public class Simulation implements Runnable {
 
     public void deleteUnsafeCircles() {
         List which = map.deleteUnsafeVehicles();
-//        for(int i = 0; i < which.size(); i++) {
-//            circleList.remove(which.get(i));
-//            rangeList.remove(which.get(i));
-//            i--;
-//        }
+        //        for(int i = 0; i < which.size(); i++) {
+        //            circleList.remove(which.get(i));
+        //            rangeList.remove(which.get(i));
+        //            i--;
+        //        }
     }
 
     private void updateVehiclesPosition() {
@@ -92,17 +91,19 @@ public class Simulation implements Runnable {
 
                 if (vehicle.safe != true) {
                     circleList.get(it).setFill(here);
-                    //labelList.get(it).setText(String.valueOf(vehicle.getCollectedEvents().size()));
+                    //labelList.get(it).setText(String.valueOf(vehicle.getCollectedEvents().size
+                    // ()));
 
                     if (vehicle.trustLevel < 0.3) {
                         circleList.get(it).setFill(here);
-//                    } else if (vehicle.getCollectedEvents().size() > 0) {
-//                        circleList.get(it).setFill(Color.BROWN);
-//                    }
+                        //                    } else if (vehicle.getCollectedEvents().size() > 0) {
+                        //                        circleList.get(it).setFill(Color.BROWN);
+                        //                    }
 
-                    labelList.get(it).setLayoutX(vehicleX + 7.0);
-                    labelList.get(it).setLayoutY(vehicleY);
-                } }
+                        labelList.get(it).setLayoutX(vehicleX + 7.0);
+                        labelList.get(it).setLayoutY(vehicleY);
+                    }
+                }
             } catch (IndexOutOfBoundsException e) {
             }
             it++;
@@ -160,8 +161,12 @@ public class Simulation implements Runnable {
 
                     vehicle.getEncounteredEvents().add(eventSource.getEvent());
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + eventSource.getId() + " encountered by Vehicle " + vehicle.getId());
-                    System.out.println("[" + timeStamp + "] Event " + eventSource.getId() + " encountered by Vehicle " + vehicle.getId());
+                    Logger.log("[" + timeStamp + "] Event " + eventSource.getId() + " encountered"
+                            + " by Vehicle " + vehicle
+                            .getId());
+                    System.out.println("[" + timeStamp + "] Event " + eventSource.getId() + " "
+                            + "encountered by Vehicle " + vehicle
+                            .getId());
                 }
             }
         }
@@ -173,9 +178,13 @@ public class Simulation implements Runnable {
             s.update(map);
             s.checkIfChangeVehicleTrustLevel();
             try {
-                if (s.connectedVehicles.size() > 0) { stationaryCirclelist.get(it).setFill(Color.ORANGE); }
-                else { stationaryCirclelist.get(it).setFill(Color.BLUE); }
-                //if (s.getCollectedEvents().size() > 0) { stationaryCirclelist.get(it).setFill(Color.CYAN); }
+                if (s.connectedVehicles.size() > 0) {
+                    stationaryCirclelist.get(it).setFill(Color.ORANGE);
+                } else {
+                    stationaryCirclelist.get(it).setFill(Color.BLUE);
+                }
+                //if (s.getCollectedEvents().size() > 0) { stationaryCirclelist.get(it).setFill
+                // (Color.CYAN); }
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
@@ -195,7 +204,6 @@ public class Simulation implements Runnable {
         }
     }
 
-
     public void changeVehiclesRanges(double range) {
         for (Vehicle vehicle : map.getVehicles()) {
             vehicle.setRange(range);
@@ -207,10 +215,14 @@ public class Simulation implements Runnable {
 
     public void teleportVehicle() {
 
-        if(map.getVehicles().size() < 0) return;
+        if (map.getVehicles().size() < 0) {
+            return;
+        }
         Vehicle vehicle = map.getVehicles().get(new Random().nextInt(map.getVehicles().size()));
 
-        vehicle.currentLocation = map.getCrossings().get(new Random().nextInt(map.getCrossings().size())).getLocation();
+        vehicle.currentLocation = map.getCrossings()
+                .get(new Random().nextInt(map.getCrossings().size()))
+                .getLocation();
     }
 
     public void addHacker() {

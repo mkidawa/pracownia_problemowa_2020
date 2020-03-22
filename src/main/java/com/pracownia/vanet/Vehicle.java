@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Vehicle extends NetworkPoint {
@@ -56,7 +55,6 @@ public class Vehicle extends NetworkPoint {
         this.date = date;
     }
 
-
     public Vehicle() {
         super();
         route = new Route();
@@ -65,11 +63,10 @@ public class Vehicle extends NetworkPoint {
     }
 
     public void setNotSafe(String mssg) {
-        if(this.safe == true)
-        {
+        if (this.safe == true) {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-            Logger.log("[" + timeStamp + "] Vehicle "+ id + " : " + mssg);
-            System.out.println("[" + timeStamp + "] Vehicle "+ id + " : " + mssg);
+            Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
             this.safe = false;
         }
     }
@@ -81,7 +78,8 @@ public class Vehicle extends NetworkPoint {
         this.range = range;
         this.speed = speed + 0.001;
         trustLevel = 0.5;
-        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
+        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
+                .getY());
     }
 
     @Override
@@ -133,8 +131,12 @@ public class Vehicle extends NetworkPoint {
                 if (!flag && this.trustLevel >= 0.5) {
                     connectedVehicle.getCollectedEvents().add(event);
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from Vehicle " + this.getId() + " to Vehicle " + connectedVehicle.getId());
-                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared from Vehicle " + this.getId() + " to Vehicle " + connectedVehicle.getId());
+                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from "
+                            + "Vehicle " + this
+                            .getId() + " to Vehicle " + connectedVehicle.getId());
+                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared "
+                            + "from Vehicle " + this
+                            .getId() + " to Vehicle " + connectedVehicle.getId());
                 }
             }
         }
@@ -151,8 +153,12 @@ public class Vehicle extends NetworkPoint {
                 if (!flag && this.trustLevel >= 0.5) {
                     connectedPoint.getCollectedEvents().add(event);
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from Vehicle " + this.getId() + " to Stationary");
-                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared from Vehicle " + this.getId() + " to Stationary");
+                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from "
+                            + "Vehicle " + this
+                            .getId() + " to Stationary");
+                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared "
+                            + "from Vehicle " + this
+                            .getId() + " to Stationary");
                 }
             }
         }
@@ -163,7 +169,8 @@ public class Vehicle extends NetworkPoint {
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
 
-        double distanceToEndPoint = Math.sqrt(Math.pow(route.getEndPoint().getX() - currentLocation.getX(), 2) +
+        double distanceToEndPoint = Math.sqrt(Math.pow(route.getEndPoint()
+                .getX() - currentLocation.getX(), 2) +
                 Math.pow(route.getEndPoint().getY() - currentLocation.getY(), 2));
 
         double cos = (route.getEndPoint().getX() - currentLocation.getX()) / distanceToEndPoint;
@@ -172,12 +179,14 @@ public class Vehicle extends NetworkPoint {
         double distanceToStart;
 
         if (direction) {
-            distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getStartPoint().getX(), 2) +
+            distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getStartPoint()
+                    .getX(), 2) +
                     Math.pow(currentLocation.getY() - route.getStartPoint().getY(), 2));
             currentLocation.setX(currentLocation.getX() + cos * speed);
             currentLocation.setY(currentLocation.getY() + sin * speed);
         } else {
-            distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getEndPoint().getX(), 2) +
+            distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getEndPoint()
+                    .getX(), 2) +
                     Math.pow(currentLocation.getY() - route.getEndPoint().getY(), 2));
 
             currentLocation.setX(currentLocation.getX() - cos * speed);
@@ -205,13 +214,12 @@ public class Vehicle extends NetworkPoint {
     public String toString() {
         return "ID:\t" + id + '\t' +
                 "safe: " + safe;
-//                "Neighbours:\t" + connectedVehicles.size() + '\t' +
-//                "Current location:\t" + currentLocation;
+        //                "Neighbours:\t" + connectedVehicles.size() + '\t' +
+        //                "Current location:\t" + currentLocation;
     }
 
-    public void addFakeEvent(EventSource eventSource)
-    {
-        AntyBogus.addEvent(eventSource.getEvent() ,this);
+    public void addFakeEvent(EventSource eventSource) {
+        AntyBogus.addEvent(eventSource.getEvent(), this);
         this.getEncounteredEvents().add(eventSource.getEvent());
     }
 }

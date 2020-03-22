@@ -56,8 +56,12 @@ public abstract class NetworkPoint {
                 if (!flag) {
                     connectedVehicle.getCollectedEvents().add(event);
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from Stationary to Vehicle " + connectedVehicle.getId());
-                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared from Stationary to Vehicle " + connectedVehicle.getId());
+                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from "
+                            + "Stationary to Vehicle " + connectedVehicle
+                            .getId());
+                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared "
+                            + "from Stationary to Vehicle " + connectedVehicle
+                            .getId());
                 }
             }
         }
@@ -67,7 +71,6 @@ public abstract class NetworkPoint {
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
     }
-
 
     protected double distance(Point a, Point b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
