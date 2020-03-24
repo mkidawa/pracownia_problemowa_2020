@@ -10,7 +10,6 @@ import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.view.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

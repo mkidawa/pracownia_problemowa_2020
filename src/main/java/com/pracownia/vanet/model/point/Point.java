@@ -13,8 +13,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class Point {
 
     /*------------------------ FIELDS REGION ------------------------*/
-    private double x = 0.0;
-    private double y = 0.0;
+    private double x;
+    private double y;
 
     /*------------------------ METHODS REGION ------------------------*/
     public Point(double x, double y) {

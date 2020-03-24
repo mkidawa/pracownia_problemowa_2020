@@ -58,6 +58,7 @@ public class Simulation implements Runnable {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -92,6 +93,7 @@ public class Simulation implements Runnable {
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
             it++;
         }
