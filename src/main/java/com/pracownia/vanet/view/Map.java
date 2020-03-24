@@ -1,21 +1,27 @@
-package com.pracownia.vanet.old;
+package com.pracownia.vanet.view;
 
+import com.pracownia.vanet.model.Crossing;
+import com.pracownia.vanet.model.Route;
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.event.EventType;
+import com.pracownia.vanet.model.point.Point;
+import com.pracownia.vanet.model.point.StationaryNetworkPoint;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Przechoowuje samochody i ich powiązania z trasami.
- */
-
-@Data
+@Getter
+@Setter
 public class Map {
 
+    /*------------------------ FIELDS REGION ------------------------*/
     private double width = 1000.0;
     private double height = 900.0;
 
@@ -29,6 +35,7 @@ public class Map {
     private List<StationaryNetworkPoint> stationaryNetworkPoints;
     private ObservableList<Vehicle> hackers;
 
+    /*------------------------ METHODS REGION ------------------------*/
     public Map() {
 
         routes = new ArrayList<>();
@@ -58,20 +65,6 @@ public class Map {
 
     }
 
-    public List<Integer> deleteUnsafeVehicles() {
-
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < vehicles.size(); i++) {
-            if (vehicles.get(i).safe == false) {
-                result.add(i);
-                vehicles.remove(i);
-                i--;
-            }
-        }
-
-        return result;
-    }
-
     private void initMap() {
         routes.add(new Route(200.0, 100.0, 200.0, 700.0));
         routes.add(new Route(400.0, 100.0, 400.0, 700.0));
@@ -80,6 +73,7 @@ public class Map {
         routes.add(new Route(100.0, 200.0, 900.0, 200.0));
         routes.add(new Route(100.0, 400.0, 900.0, 400.0));
         routes.add(new Route(100.0, 600.0, 900.0, 600.0));
+
         crossings.add(new Crossing(new Point(200.0, 200.0), routes.get(0), routes.get(4)));
         crossings.add(new Crossing(new Point(200.0, 400.0), routes.get(0), routes.get(5)));
         crossings.add(new Crossing(new Point(200.0, 600.0), routes.get(0), routes.get(6)));
@@ -107,6 +101,20 @@ public class Map {
                 new Point(750.0, 610.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
     }
 
+    public List<Integer> deleteUnsafeVehicles() {
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < vehicles.size(); i++) {
+            if (vehicles.get(i).isSafe() == false) {
+                result.add(i);
+                vehicles.remove(i);
+                i--;
+            }
+        }
+
+        return result;
+    }
+
     public void addVehicles(int amount) {
         Random random = new Random();
 
@@ -128,7 +136,8 @@ public class Map {
         Random random = new Random();
         int x = (int) (random.nextDouble() * 1000);
         int y = (int) (random.nextDouble() * 1000);
-        Vehicle vehicle = new Vehicle(routes.get(99 % 5), fakeCarId, 40.0, random.nextDouble() / 2.0 + 2);
+        Vehicle vehicle = new Vehicle(routes.get(99 % 5), fakeCarId, 40.0,
+                random.nextDouble() / 2.0 + 2);
         EventSource eventSource = new EventSource(fakeEventId, nameEvent, "Fake Car Accident",
                 new Point(x, y), new Date(), 20.0, EventType.CAR_ACCIDENT);
         vehicle.addFakeEvent(eventSource);
@@ -136,5 +145,5 @@ public class Map {
         fakeCarId--;
         fakeEventId--;
     }
-
 }
+    
