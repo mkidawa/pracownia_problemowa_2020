@@ -1,4 +1,4 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.old;
 
 public class App {
     public static void main(String[] args) {

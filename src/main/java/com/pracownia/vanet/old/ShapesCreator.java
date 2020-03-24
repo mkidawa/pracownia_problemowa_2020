@@ -1,4 +1,4 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.old;
 
 import javafx.scene.Group;
 import javafx.scene.control.Label;

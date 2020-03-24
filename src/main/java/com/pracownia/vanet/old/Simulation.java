@@ -1,4 +1,4 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.old;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 
 @Data
 public class Simulation implements Runnable {

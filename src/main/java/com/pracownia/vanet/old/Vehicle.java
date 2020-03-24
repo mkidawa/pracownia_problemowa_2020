@@ -1,4 +1,4 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.old;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
