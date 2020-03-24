@@ -199,21 +199,7 @@ public class Vehicle extends NetworkPoint {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .appendSuper(super.toString())
-                .append("id", id)
-                .append("trustLevel", trustLevel)
-                .append("currentX", currentX)
-                .append("currentY", currentY)
-                .append("route", route)
-                .append("iterator", iterator)
-                .append("speed", speed)
-                .append("direction", direction)
-                .append("connectedPoints", connectedPoints)
-                .append("date", date)
-                .append("previousCrossing", previousCrossing)
-                .append("safe", safe)
-                .toString();
+        return "ID:\t" + id + '\t' + "safe: " + safe;
     }
 }
     
