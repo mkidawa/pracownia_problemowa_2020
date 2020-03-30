@@ -8,6 +8,7 @@ import com.pracownia.vanet.model.point.Point;
 import com.pracownia.vanet.model.point.StationaryNetworkPoint;
 import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.view.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +33,7 @@ public class Vehicle extends NetworkPoint {
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
     private Date date;
+    @Setter(AccessLevel.NONE)
     private Point previousCrossing;
     private boolean safe = true;
 
@@ -52,6 +54,11 @@ public class Vehicle extends NetworkPoint {
         trustLevel = 0.5;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
                 .getY());
+    }
+
+    public void setPreviousCrossing(Point previousCrossing) {
+        this.previousCrossing = previousCrossing;
+        this.setDate(new Date());
     }
 
     public void setNotSafe(String mssg) {
