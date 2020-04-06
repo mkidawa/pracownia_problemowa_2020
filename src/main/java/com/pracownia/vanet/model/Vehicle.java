@@ -193,6 +193,9 @@ public class Vehicle extends NetworkPoint {
     @Override
     public void update(Map map) {
         log.add(new HistoryPoint(this.currentX, this.currentY, this.speed));
+        while (log.size() > 30) {
+            log.remove(0);
+        }
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
 
