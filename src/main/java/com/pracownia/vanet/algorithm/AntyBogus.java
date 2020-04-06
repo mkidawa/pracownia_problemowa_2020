@@ -152,9 +152,10 @@ public class AntyBogus {
                     deltaV.add(Math.abs(logs.get(i + 1).getSpeed() - logs.get(i).getSpeed()));
                 }
                 //TODO: Finish calculations
-                double prevDeltaV = 0;
                 for (Double item : deltaV) {
-
+                    if (item < 1) { //We need to find good value to check if it is true accident or hacked
+                        result = true;
+                    }
                 }
 
             }
