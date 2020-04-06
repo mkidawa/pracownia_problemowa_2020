@@ -2,6 +2,6 @@ package com.pracownia.vanet.model.event;
 
 public enum EventType {
     CAR_ACCIDENT,
-    SPEED_CAMERA,
+    TRAFFIC_JAM,
     POLICE_CONTROL
 }
