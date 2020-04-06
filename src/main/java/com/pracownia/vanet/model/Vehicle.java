@@ -33,8 +33,7 @@ public class Vehicle extends NetworkPoint {
     private boolean direction = true; // True if from starting point to end point
     private int currentLane;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
-
-
+    private List<HistoryPoint> log = new ArrayList<>();
     private Date date;
     @Setter(AccessLevel.NONE)
     private Point previousCrossing;
@@ -53,6 +52,7 @@ public class Vehicle extends NetworkPoint {
         tooFast = false;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
                 .getY());
+
     }
 
     public void setPreviousCrossing(Point previousCrossing) {
@@ -61,7 +61,7 @@ public class Vehicle extends NetworkPoint {
     }
 
     public void setNotSafe(String mssg) {
-        if (this.safe) {
+        if (this.safe == true) {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
             Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
             System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
@@ -192,6 +192,7 @@ public class Vehicle extends NetworkPoint {
 
     @Override
     public void update(Map map) {
+        log.add(new HistoryPoint(this.currentX, this.currentY, this.speed));
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
 
