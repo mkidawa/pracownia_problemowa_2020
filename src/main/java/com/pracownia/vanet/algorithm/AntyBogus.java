@@ -1,5 +1,6 @@
 package com.pracownia.vanet.algorithm;
 
+import com.pracownia.vanet.model.HistoryPoint;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.Event;
 import javafx.collections.FXCollections;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -137,5 +139,36 @@ public class AntyBogus {
             eventsByVehicle.get(event).add(vehicle);
         }
     }
+
+
+    public static boolean analieseVehicle(Vehicle vehicle, Event event) {
+        boolean result = false;
+        List<HistoryPoint> logs = new ArrayList<>(vehicle.getLog());
+        Collections.reverse(logs);
+        switch (event.getEventType()) {
+            case CAR_ACCIDENT: {
+                List<Double> deltaV = new ArrayList<>();
+                for (int i = 0; i < logs.size() - 1; i++) {
+                    deltaV.add(Math.abs(logs.get(i + 1).getSpeed() - logs.get(i).getSpeed()));
+                }
+                //TODO: Finish calculations
+                double prevDeltaV = 0;
+                for (Double item : deltaV) {
+
+                }
+
+            }
+            case POLICE_CONTROL: {
+
+                break;
+            }
+            case TRAFFIC_JAM: {
+
+                break;
+            }
+        }
+        return result;
+    }
+
 }
     
