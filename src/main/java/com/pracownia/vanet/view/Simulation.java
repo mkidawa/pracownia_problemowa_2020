@@ -1,28 +1,37 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.view;
 
+import com.pracownia.vanet.model.Crossing;
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.Event;
+import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.point.StationaryNetworkPoint;
+import com.pracownia.vanet.util.Logger;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 
-@Data
+@Getter
+@Setter
 public class Simulation implements Runnable {
 
-    public Color here = Color.RED;
-    public Boolean simulationRunning;
-    Thread tr;
+    /*------------------------ FIELDS REGION ------------------------*/
+    private Color here = Color.RED;
+    private Boolean simulationRunning;
+    private Thread tr;
     private Map map;
     private List<Circle> circleList;
     private List<Circle> rangeList;
     private List<Label> labelList;
     private List<Circle> stationaryCirclelist;
 
+    /*------------------------ METHODS REGION ------------------------*/
     public Simulation() {
         map = new Map();
         circleList = new ArrayList<>();
@@ -33,8 +42,8 @@ public class Simulation implements Runnable {
         tr = new Thread(this);
     }
 
+    @Override
     public void run() {
-
         while (true) {
             if (simulationRunning) {
                 updateVehiclesPosition();
@@ -49,32 +58,9 @@ public class Simulation implements Runnable {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-    }
-
-    public void checkCopies() {
-        int size = map.getVehicles().size();
-        for (int i = 0; i < map.getVehicles().size(); i++) {
-            for (int j = i + 1; j < map.getVehicles().size(); j++) {
-                if (map.getVehicles().get(i).getId() == map.getVehicles().get(j).getId()) {
-                    map.getVehicles().get(j).setNotSafe("KLON");
-                    map.getVehicles().get(i).setNotSafe("KLON");
-                    System.out.println(map.getVehicles()
-                            .get(i)
-                            .getId() + " ... " + map.getVehicles().get(j).getId());
-                }
-            }
-        }
-    }
-
-    public void deleteUnsafeCircles() {
-        List which = map.deleteUnsafeVehicles();
-        //        for(int i = 0; i < which.size(); i++) {
-        //            circleList.remove(which.get(i));
-        //            rangeList.remove(which.get(i));
-        //            i--;
-        //        }
     }
 
     private void updateVehiclesPosition() {
@@ -91,12 +77,12 @@ public class Simulation implements Runnable {
                 rangeList.get(it).setCenterX(vehicleX);
                 rangeList.get(it).setCenterY(vehicleY);
 
-                if (vehicle.safe != true) {
+                if (vehicle.isSafe() != true) {
                     circleList.get(it).setFill(here);
                     //labelList.get(it).setText(String.valueOf(vehicle.getCollectedEvents().size
                     // ()));
 
-                    if (vehicle.trustLevel < 0.3) {
+                    if (vehicle.getTrustLevel() < 0.3) {
                         circleList.get(it).setFill(here);
                         //                    } else if (vehicle.getCollectedEvents().size() > 0) {
                         //                        circleList.get(it).setFill(Color.BROWN);
@@ -107,6 +93,7 @@ public class Simulation implements Runnable {
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
             it++;
         }
@@ -180,7 +167,7 @@ public class Simulation implements Runnable {
             s.update(map);
             s.checkIfChangeVehicleTrustLevel();
             try {
-                if (s.connectedVehicles.size() > 0) {
+                if (s.getConnectedVehicles().size() > 0) {
                     stationaryCirclelist.get(it).setFill(Color.ORANGE);
                 } else {
                     stationaryCirclelist.get(it).setFill(Color.BLUE);
@@ -222,15 +209,38 @@ public class Simulation implements Runnable {
         }
         Vehicle vehicle = map.getVehicles().get(new Random().nextInt(map.getVehicles().size()));
 
-        vehicle.currentLocation = map.getCrossings()
+        vehicle.setCurrentLocation(map.getCrossings()
                 .get(new Random().nextInt(map.getCrossings().size()))
-                .getLocation();
+                .getLocation());
     }
 
     public void addHacker() {
 
     }
 
+    public void checkCopies() {
+        int size = map.getVehicles().size();
+        for (int i = 0; i < map.getVehicles().size(); i++) {
+            for (int j = i + 1; j < map.getVehicles().size(); j++) {
+                if (map.getVehicles().get(i).getId() == map.getVehicles().get(j).getId()) {
+                    map.getVehicles().get(j).setNotSafe("KLON");
+                    map.getVehicles().get(i).setNotSafe("KLON");
+                    System.out.println(map.getVehicles()
+                            .get(i)
+                            .getId() + " ... " + map.getVehicles().get(j).getId());
+                }
+            }
+        }
+    }
+
+    public void deleteUnsafeCircles() {
+        List which = map.deleteUnsafeVehicles();
+        //        for(int i = 0; i < which.size(); i++) {
+        //            circleList.remove(which.get(i));
+        //            rangeList.remove(which.get(i));
+        //            i--;
+        //        }
+    }
 /*
 	private void showVehiclesConnected(){
 		int it = 0;
@@ -251,3 +261,4 @@ public class Simulation implements Runnable {
 		}
 	}*/
 }
+    

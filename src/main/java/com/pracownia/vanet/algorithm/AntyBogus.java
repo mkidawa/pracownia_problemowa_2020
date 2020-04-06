@@ -1,8 +1,13 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.algorithm;
 
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,16 +18,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class AntyBogus {
+
+    /*------------------------ FIELDS REGION ------------------------*/
     private static final int CONFIRMATION_LEVEL = 2;
     private static final double TRUST_LEVEL_BONUS = 1.0;
     private static final double THRESH_HOLD = 10E-15;
-    private static ConcurrentMap<Event, ObservableList<Vehicle>> eventsByVehicle;
-    public static ConcurrentMap<Event, List<Vehicle>> modifiedTrustLevelVehicles;
-    private static ScheduledExecutorService cleanEventsTaskExecutor;
-    public static List<Vehicle> vehiclesToIncreaseTrustLevel;
-    public static List<Vehicle> vehiclesToDecreaseTrustLevel;
 
+    private static ConcurrentMap<Event, ObservableList<Vehicle>> eventsByVehicle;
+    private static ConcurrentMap<Event, List<Vehicle>> modifiedTrustLevelVehicles;
+    private static ScheduledExecutorService cleanEventsTaskExecutor;
+    private static List<Vehicle> vehiclesToIncreaseTrustLevel;
+    private static List<Vehicle> vehiclesToDecreaseTrustLevel;
+
+    /*------------------------ METHODS REGION ------------------------*/
     static {
         eventsByVehicle = new ConcurrentHashMap<>();
         modifiedTrustLevelVehicles = new ConcurrentHashMap<>();
@@ -35,6 +47,14 @@ public class AntyBogus {
                 30,
                 TimeUnit.SECONDS
         );
+    }
+
+    public static List<Vehicle> getVehiclesToIncreaseTrustLevel() {
+        return vehiclesToIncreaseTrustLevel;
+    }
+
+    public static List<Vehicle> getVehiclesToDecreaseTrustLevel() {
+        return vehiclesToDecreaseTrustLevel;
     }
 
     private static Runnable createCleaningEventsTask() {
@@ -52,23 +72,15 @@ public class AntyBogus {
         };
     }
 
-    public static void addEvent(Event event, Vehicle vehicle) {
-        if (!eventsByVehicle.containsKey(event)) {
-            eventsByVehicle.put(event, createObservableList(vehicle, event));
-            if (!modifiedTrustLevelVehicles.containsKey(event)) {
-                modifiedTrustLevelVehicles.put(event, new ArrayList<>());
-            }
-        } else if (!eventsByVehicle.get(event).contains(vehicle)) {
-            eventsByVehicle.get(event).add(vehicle);
-        }
-    }
+    private static ObservableList<Vehicle> createObservableList(
+            final Vehicle vehicle, final Event event) {
 
-    private static ObservableList<Vehicle> createObservableList(final Vehicle vehicle,
-                                                                final Event event) {
         ObservableList<Vehicle> vehicles = FXCollections.observableArrayList();
         vehicles.add(vehicle);
 
-        vehicles.addListener((ListChangeListener<Vehicle>) c -> checkIfEnoughConfirmations(c.getList(), event));
+        vehicles.addListener((ListChangeListener<Vehicle>) c -> {
+            checkIfEnoughConfirmations(c.getList(), event);
+        });
 
         return vehicles;
     }
@@ -114,4 +126,16 @@ public class AntyBogus {
             }
         }
     }
+
+    public static void addEvent(Event event, Vehicle vehicle) {
+        if (!eventsByVehicle.containsKey(event)) {
+            eventsByVehicle.put(event, createObservableList(vehicle, event));
+            if (!modifiedTrustLevelVehicles.containsKey(event)) {
+                modifiedTrustLevelVehicles.put(event, new ArrayList<>());
+            }
+        } else if (!eventsByVehicle.get(event).contains(vehicle)) {
+            eventsByVehicle.get(event).add(vehicle);
+        }
+    }
 }
+    

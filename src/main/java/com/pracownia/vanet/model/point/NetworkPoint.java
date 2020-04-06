@@ -1,13 +1,23 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.model.point;
 
-import lombok.Data;
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.Event;
+import com.pracownia.vanet.util.Logger;
+import com.pracownia.vanet.view.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public abstract class NetworkPoint {
+
+    /*------------------------ FIELDS REGION ------------------------*/
     protected int id;
     protected Point currentLocation = new Point();
     protected double range;
@@ -15,8 +25,9 @@ public abstract class NetworkPoint {
     protected List<Event> collectedEvents = new ArrayList<>();
     protected List<Event> encounteredEvents = new ArrayList<>();
 
-    public NetworkPoint() {
-
+    /*------------------------ METHODS REGION ------------------------*/
+    protected double distance(Point a, Point b) {
+        return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }
 
     public NetworkPoint(int id, Point currentLocation, double range) {
@@ -71,8 +82,5 @@ public abstract class NetworkPoint {
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
     }
-
-    protected double distance(Point a, Point b) {
-        return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
-    }
 }
+    

@@ -1,5 +1,8 @@
 package com.pracownia.vanet;
 
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.view.ShapesCreator;
+import com.pracownia.vanet.view.Simulation;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -17,29 +20,35 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import lombok.Getter;
+import lombok.Setter;
 
-public class WindowApp extends Application {
+@Getter
+@Setter
+public class Main extends Application {
 
-    public CheckBox seeThrough;
-    public TextField trustLevelField;
-    public TextField speedField;
-    public TextField vehIdField;
-    public TextField connEventsField;
-    public TextField connVehField;
-    public TextField connPointsField;
+    /*------------------------ FIELDS REGION ------------------------*/
+    private CheckBox seeThrough;
+    private TextField trustLevelField;
+    private TextField speedField;
+    private TextField vehIdField;
+    private TextField connEventsField;
+    private TextField connVehField;
+    private TextField connPointsField;
     private Group root = new Group();
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
     private Simulation simulation;
     private long startTime;
 
+    /*------------------------ METHODS REGION ------------------------*/
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+    public void start(Stage stage) throws Exception {
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
                 Platform.exit();
@@ -58,27 +67,27 @@ public class WindowApp extends Application {
 
         Scene scene = new Scene(root, 1400, 850);
 
-        primaryStage.setTitle("Vanet");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        simulation.tr.start();
+        stage.setTitle("Vanet");
+        stage.setScene(scene);
+        stage.show();
+        simulation.getTr().start();
 
         long startTime = System.currentTimeMillis();
         double durationTime = ((System.currentTimeMillis() - startTime) / 1000.0);
         System.out.println(durationTime + "s");
+
     }
 
-    public void startTimer() {
+    private void startTimer() {
         startTime = System.currentTimeMillis();
         System.out.println("Simulation started");
     }
 
-    public void stopTimer() {
+    private void stopTimer() {
         double durationTime = ((System.currentTimeMillis() - startTime) / 1000.0);
-        System.out.println("Duration: "+ durationTime + "s");
+        System.out.println("Duration: " + durationTime + "s");
         System.out.println("Simulation stopped");
     }
-
 
     private void setInterface(Simulation simulation) {
         Button showRangeButton = new Button("Show Range");
@@ -204,9 +213,9 @@ public class WindowApp extends Application {
             public void changed(ObservableValue<? extends Boolean> observableValue,
                                 Boolean aBoolean, Boolean t1) {
                 if (t1) {
-                    simulation.here = Color.TRANSPARENT;
+                    simulation.setHere(Color.TRANSPARENT);
                 } else {
-                    simulation.here = Color.RED;
+                    simulation.setHere(Color.RED);
                 }
             }
         });
@@ -297,5 +306,5 @@ public class WindowApp extends Application {
                         hackerVehiclesList,
                         seeThrough);
     }
-
 }
+    

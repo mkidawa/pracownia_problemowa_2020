@@ -1,7 +1,14 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.pracownia.vanet.algorithm.AntyBogus;
+import com.pracownia.vanet.model.event.Event;
+import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.point.NetworkPoint;
+import com.pracownia.vanet.model.point.Point;
+import com.pracownia.vanet.model.point.StationaryNetworkPoint;
+import com.pracownia.vanet.util.Logger;
+import com.pracownia.vanet.view.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,65 +17,32 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class Vehicle extends NetworkPoint {
 
-    @Getter
-    @Setter
-    public double trustLevel;
-    int id;
-    double currentX;
-    double currentY;
-    Route route;
-    int iterator;
-    public double speed;
+    /*------------------------ FIELDS REGION ------------------------*/
+    private int id;
+    private double trustLevel;
+    private double currentX;
+    private double currentY;
+    private Route route;
+    private int iterator;
+    private double speed;
     private boolean direction = true; // True if from starting point to end point
-    public List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
+    private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
-    public Date date;
-    public Point previousCrossing;
-    public boolean safe = true;
+    private Date date;
+    @Setter(AccessLevel.NONE)
+    private Point previousCrossing;
+    private boolean safe = true;
 
-    public double getSpeed() {
-        return speed;
-    }
-
-    public Point getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public Point getPreviousCrossing() {
-        return previousCrossing;
-    }
-
-    public void setPreviousCrossing(Point previousCrossing) {
-        this.previousCrossing = previousCrossing;
-        this.setDate(new Date());
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
+    /*------------------------ METHODS REGION ------------------------*/
     public Vehicle() {
         super();
         route = new Route();
         trustLevel = 0.5;
         currentLocation = new Point();
-    }
-
-    public void setNotSafe(String mssg) {
-        if (this.safe == true) {
-            Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-            Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
-            System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
-            this.safe = false;
-        }
     }
 
     public Vehicle(Route route, int id, double range, double speed) {
@@ -80,6 +54,20 @@ public class Vehicle extends NetworkPoint {
         trustLevel = 0.5;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
                 .getY());
+    }
+
+    public void setPreviousCrossing(Point previousCrossing) {
+        this.previousCrossing = previousCrossing;
+        this.setDate(new Date());
+    }
+
+    public void setNotSafe(String mssg) {
+        if (this.safe == true) {
+            Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
+            Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            this.safe = false;
+        }
     }
 
     @Override
@@ -210,16 +198,14 @@ public class Vehicle extends NetworkPoint {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "ID:\t" + id + '\t' +
-                "safe: " + safe;
-        //                "Neighbours:\t" + connectedVehicles.size() + '\t' +
-        //                "Current location:\t" + currentLocation;
-    }
-
     public void addFakeEvent(EventSource eventSource) {
         AntyBogus.addEvent(eventSource.getEvent(), this);
         this.getEncounteredEvents().add(eventSource.getEvent());
     }
+
+    @Override
+    public String toString() {
+        return "ID:\t" + id + '\t' + "safe: " + safe;
+    }
 }
+    

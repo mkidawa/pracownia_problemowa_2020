@@ -1,5 +1,11 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.view;
 
+import com.pracownia.vanet.Main;
+import com.pracownia.vanet.model.Route;
+import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.point.NetworkPoint;
+import com.pracownia.vanet.model.point.StationaryNetworkPoint;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -8,14 +14,17 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 public class ShapesCreator {
+
+    /*------------------------ FIELDS REGION ------------------------*/
     private Group root;
     private Simulation simulation;
-    private WindowApp windowApp;
+    private Main main;
 
-    public ShapesCreator(Group root, Simulation simulation, WindowApp windowApp) {
+    /*------------------------ METHODS REGION ------------------------*/
+    public ShapesCreator(Group root, Simulation simulation, Main main) {
         this.root = root;
         this.simulation = simulation;
-        this.windowApp = windowApp;
+        this.main = main;
     }
 
     private Circle circleCreator(Vehicle vehicle) {
@@ -25,12 +34,12 @@ public class ShapesCreator {
         circle.setFill(Color.BLACK);
         circle.setRadius(8.0);
         circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            windowApp.speedField.setText(String.valueOf(vehicle.getSpeed()));
-            windowApp.trustLevelField.setText(String.valueOf(vehicle.getTrustLevel()));
-            windowApp.vehIdField.setText(String.valueOf(vehicle.getId()));
-            windowApp.connPointsField.setText(String.valueOf(vehicle.getConnectedPoints().size()));
-            windowApp.connVehField.setText(String.valueOf(vehicle.getConnectedVehicles().size()));
-            windowApp.connEventsField.setText(String.valueOf(vehicle.getCollectedEvents().size()));
+            main.getSpeedField().setText(String.valueOf(vehicle.getSpeed()));
+            main.getTrustLevelField().setText(String.valueOf(vehicle.getTrustLevel()));
+            main.getVehIdField().setText(String.valueOf(vehicle.getId()));
+            main.getConnPointsField().setText(String.valueOf(vehicle.getConnectedPoints().size()));
+            main.getConnVehField().setText(String.valueOf(vehicle.getConnectedVehicles().size()));
+            main.getConnEventsField().setText(String.valueOf(vehicle.getCollectedEvents().size()));
         });
         return circle;
     }
@@ -153,3 +162,4 @@ public class ShapesCreator {
         }
     }
 }
+    

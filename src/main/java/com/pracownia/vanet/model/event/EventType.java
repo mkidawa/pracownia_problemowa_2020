@@ -1,4 +1,4 @@
-package com.pracownia.vanet;
+package com.pracownia.vanet.model.event;
 
 public enum EventType {
     CAR_ACCIDENT,
