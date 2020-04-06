@@ -158,6 +158,20 @@ public class Main extends Application {
             simulation.deleteUnsafeCircles();
         });
 
+        TextField amountOfDevices = new TextField();
+        amountOfDevices.setLayoutX(1130.0);
+        amountOfDevices.setLayoutY(520.0);
+        amountOfDevices.setText("10");
+
+        Button addSybilAttackerButton = new Button("Add sybil attacker");
+        addSybilAttackerButton.setLayoutX(1130.0);
+        addSybilAttackerButton.setLayoutY(460.0);
+
+
+        Label amountOfSybilAttackersLabel = new Label("Amount of devices to fake");
+        amountOfSybilAttackersLabel.setLayoutX(1130.0);
+        amountOfSybilAttackersLabel.setLayoutY(500.0);
+
         // Vehicle informations.
         this.trustLevelField = new TextField();
         trustLevelField.setLayoutX(950.0);
@@ -213,7 +227,6 @@ public class Main extends Application {
         hackerVehiclesList.setMaxHeight(100);
         hackerVehiclesList.setMaxWidth(175.0);
         hackerVehiclesList.setItems(simulation.getMap().getVehicles());
-        //.filtered(x->!x.safe)
 
         seeThrough = new CheckBox("Widac?");
         seeThrough.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -280,6 +293,12 @@ public class Main extends Application {
             }
         });
 
+        addSybilAttackerButton.setOnAction(e -> {
+            simulation.getMap().addSybilAttacker(Integer.valueOf(amountOfDevices.getText()));
+            shapesCreator.setVehicleCircles(simulation, 1);
+            shapesCreator.setLabels(simulation, 1);
+        });
+
         spawnFakedVeehicle.setOnAction(e -> {
             Integer numberOfFakeVehicle = Integer.valueOf(spawnFakedVeehicleTextField.getText());
             for (int i = 0; i < numberOfFakeVehicle; i++) {
@@ -326,6 +345,9 @@ public class Main extends Application {
                         addHackerVehicle,
                         clearNotSafe,
                         hackerVehiclesList,
+                        addSybilAttackerButton,
+                        amountOfDevices,
+                        amountOfSybilAttackersLabel,
                         seeThrough);
     }
 }

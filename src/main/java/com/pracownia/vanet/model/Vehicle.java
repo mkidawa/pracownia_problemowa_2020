@@ -15,6 +15,7 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -32,8 +33,11 @@ public class Vehicle extends NetworkPoint {
     private double speed;
     private boolean direction = true; // True if from starting point to end point
     private int currentLane;
+    private boolean detectedAsSybil = false;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
+    @Getter
+    private LinkedList<RLUTag> linkTagChain = new LinkedList<>();
 
     private Date date;
     @Setter(AccessLevel.NONE)
@@ -67,6 +71,25 @@ public class Vehicle extends NetworkPoint {
             System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
             this.safe = false;
         }
+        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
+        System.out.println("Spawned Vehicle #" + id + " at (" + currentLocation.getX() + "," + currentLocation.getY() + ")");
+    }
+
+    public void markAsSybil() {
+        Logger.log("Vehicle #" + id + " detected as sybil");
+        System.out.println("Vehicle #" + id + " detected as sybil");
+        detectedAsSybil = true;
+    }
+
+    public boolean isSybil() {
+        return detectedAsSybil;
+    }
+
+    private void obtainTagFromUnit(StationaryNetworkPoint rlu) {
+        if (linkTagChain.size() > 10) {
+            linkTagChain.removeLast();
+        }
+        linkTagChain.addFirst(rlu.obtainTag());
     }
 
     @Override
@@ -89,6 +112,12 @@ public class Vehicle extends NetworkPoint {
             if (distance(this.currentLocation, s.getCurrentLocation()) < range) {
                 if (!connectedPoints.contains(s)) {
                     connectedPoints.add(s);
+                    obtainTagFromUnit(s);
+                    if (!isSybil()) {
+                        System.out.print("Vehicle #" + id + "has tag chain: ");
+                        linkTagChain.forEach(System.out::print);
+                        System.out.println();
+                    }
                 }
             } else {
                 if (isPointInList(s, connectedPoints)) {
