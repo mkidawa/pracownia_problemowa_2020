@@ -151,11 +151,9 @@ public class Simulation implements Runnable {
                     vehicle.getEncounteredEvents().add(eventSource.getEvent());
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
                     Logger.log("[" + timeStamp + "] Event " + eventSource.getId() + " encountered"
-                            + " by Vehicle " + vehicle
-                            .getId());
+                            + " by Vehicle " + vehicle.getId());
                     System.out.println("[" + timeStamp + "] Event " + eventSource.getId() + " "
-                            + "encountered by Vehicle " + vehicle
-                            .getId());
+                            + "encountered by Vehicle " + vehicle.getId());
                 }
             }
         }

@@ -91,14 +91,14 @@ public class Map {
         stationaryNetworkPoints.add(new StationaryNetworkPoint(1, new Point(260.0, 610.0), 30.0));
         stationaryNetworkPoints.add(new StationaryNetworkPoint(2, new Point(480.0, 610.0), 30.0));
 
-        eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
+        /*eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
                 new Point(250.0, 210.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
 
         eventSources.add(new EventSource(1, "Car Accident", "Serious Car Accident",
                 new Point(500.0, 410.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
 
         eventSources.add(new EventSource(2, "Car Accident", "Serious Car Accident",
-                new Point(750.0, 610.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
+                new Point(750.0, 610.0), new Date(), 20.0, EventType.CAR_ACCIDENT));*/
     }
 
     public List<Integer> deleteUnsafeVehicles() {

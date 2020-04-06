@@ -31,7 +31,7 @@ public class Vehicle extends NetworkPoint {
     private double speed;
     private boolean direction = true; // True if from starting point to end point
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
-
+    private List<HistoryPoint> log = new ArrayList<>();
     private Date date;
     @Setter(AccessLevel.NONE)
     private Point previousCrossing;
@@ -52,8 +52,7 @@ public class Vehicle extends NetworkPoint {
         this.range = range;
         this.speed = speed + 0.001;
         trustLevel = 0.5;
-        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
-                .getY());
+        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
     }
 
     public void setPreviousCrossing(Point previousCrossing) {
@@ -154,6 +153,7 @@ public class Vehicle extends NetworkPoint {
 
     @Override
     public void update(Map map) {
+        log.add(new HistoryPoint(this.currentX, this.currentY, this.speed));
         updateConnectedPoints(map);
         sendEventsToConnectedPoints();
 
