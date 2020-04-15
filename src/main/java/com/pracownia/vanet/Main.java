@@ -275,6 +275,27 @@ public class Main extends Application {
             shapesCreator.setLabels(simulation, Integer.parseInt(vehiclesAmountField.getText()));
         });
 
+        // Sybil nodes management
+        TextField amountOfSybilDevices = new TextField();
+        amountOfSybilDevices.setLayoutX(1130.0);
+        amountOfSybilDevices.setLayoutY(520.0);
+        amountOfSybilDevices.setText("10");
+
+        Button addSybilAttackerButton = new Button("Add sybil attacker");
+        addSybilAttackerButton.setLayoutX(1130.0);
+        addSybilAttackerButton.setLayoutY(460.0);
+
+
+        Label amountOfSybilAttackersLabel = new Label("Amount of devices to fake");
+        amountOfSybilAttackersLabel.setLayoutX(1130.0);
+        amountOfSybilAttackersLabel.setLayoutY(500.0);
+
+        addSybilAttackerButton.setOnAction(e -> {
+            simulation.getMap().addSybilAttacker(Integer.valueOf(amountOfSybilDevices.getText()));
+            shapesCreator.setVehicleCircles(simulation, 1);
+            shapesCreator.setLabels(simulation, 1);
+        });
+
         root.getChildren()
                 .addAll(chooseFakeEvent,
                         spawnFakedVeehicle,
@@ -304,7 +325,10 @@ public class Main extends Application {
                         addHackerVehicle,
                         clearNotSafe,
                         hackerVehiclesList,
-                        seeThrough);
+                        seeThrough,
+                        amountOfSybilDevices,
+                        addSybilAttackerButton,
+                        amountOfSybilAttackersLabel);
     }
 }
     

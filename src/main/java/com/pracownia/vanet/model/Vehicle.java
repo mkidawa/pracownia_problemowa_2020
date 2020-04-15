@@ -15,6 +15,7 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -37,6 +38,10 @@ public class Vehicle extends NetworkPoint {
     private Point previousCrossing;
     private boolean safe = true;
 
+    @Getter
+    private LinkedList<RLUTag> obtainedTags = new LinkedList<>();
+
+
     /*------------------------ METHODS REGION ------------------------*/
     public Vehicle() {
         super();
@@ -54,6 +59,14 @@ public class Vehicle extends NetworkPoint {
         trustLevel = 0.5;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
                 .getY());
+        System.out.println("Spawned Vehicle #" + id + " at (" + currentLocation.getX() + "," + currentLocation.getY() + ")");
+    }
+
+    private void obtainTagFromUnit(StationaryNetworkPoint rlu) {
+        if (obtainedTags.size() > 10) {
+            obtainedTags.removeLast();
+        }
+        obtainedTags.addFirst(rlu.obtainTag());
     }
 
     public void setPreviousCrossing(Point previousCrossing) {
@@ -90,6 +103,10 @@ public class Vehicle extends NetworkPoint {
             if (distance(this.currentLocation, s.getCurrentLocation()) < range) {
                 if (!connectedPoints.contains(s)) {
                     connectedPoints.add(s);
+                    obtainTagFromUnit(s);
+                    System.out.print("Vehicle #" + id + " has tag chain: ");
+                    obtainedTags.forEach(System.out::print);
+                    System.out.println();
                 }
             } else {
                 if (isPointInList(s, connectedPoints)) {

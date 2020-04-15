@@ -2,6 +2,7 @@ package com.pracownia.vanet.view;
 
 import com.pracownia.vanet.model.Crossing;
 import com.pracownia.vanet.model.Route;
+import com.pracownia.vanet.model.SybilVehicle;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.model.event.EventType;
@@ -145,5 +146,13 @@ public class Map {
         fakeCarId--;
         fakeEventId--;
     }
+
+    public void addSybilAttacker(int amount)
+    {
+        Random random = new Random();
+        int id = Math.abs(random.nextInt() % 1000) + 1000;
+        vehicles.add(new SybilVehicle(routes.get(1), id, 40.0, 10, amount));
+    }
+
 }
     

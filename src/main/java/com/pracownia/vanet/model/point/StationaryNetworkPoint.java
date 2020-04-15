@@ -1,10 +1,13 @@
 package com.pracownia.vanet.model.point;
 
 import com.pracownia.vanet.algorithm.AntyBogus;
+import com.pracownia.vanet.model.RLUTag;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.util.Logger;
 
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.LinkedList;
 
 public class StationaryNetworkPoint extends NetworkPoint {
 
@@ -48,5 +51,43 @@ public class StationaryNetworkPoint extends NetworkPoint {
             }
         }
     }
+
+    public void checkForSybilVehicles() {
+        for (Vehicle v1 : connectedVehicles) {
+            if (!v1.isSafe()) continue;
+            for (Vehicle v2 : connectedVehicles) {
+                if (v1 == v2 || !v2.isSafe()) continue;
+                if (areChainTagsSimilar(v1.getObtainedTags(), v2.getObtainedTags())) {
+                    markAsSybil(v1);
+                    markAsSybil(v2);
+                }
+            }
+        }
+    }
+
+    private void markAsSybil(Vehicle v) {
+        v.setNotSafe("Its a sybil");
+    }
+
+    private boolean areChainTagsSimilar(LinkedList<RLUTag> firstVehicleTags, LinkedList<RLUTag> secondVehicleTags) {
+        int yeetVehicleTreshold = 3;
+        int sameTagsCount = 0;
+        if (firstVehicleTags.size() < yeetVehicleTreshold || secondVehicleTags.size() < yeetVehicleTreshold)
+            return false;
+        for (int i = 0; i < Math.min(firstVehicleTags.size(), secondVehicleTags.size()); i++) {
+            if (firstVehicleTags.get(i).equals(secondVehicleTags.get(i))) {
+                sameTagsCount++;
+            }
+        }
+        if (sameTagsCount >= yeetVehicleTreshold)
+            return true;
+        return false;
+    }
+
+    public RLUTag obtainTag() {
+        int roundedTimestamp = (int) new Date().getTime() / 100 * 100;
+        return new RLUTag(id, roundedTimestamp);
+    }
+
 }
     
