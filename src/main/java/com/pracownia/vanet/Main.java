@@ -94,6 +94,7 @@ public class Main extends Application {
         Button changeRangeButton = new Button("ChangeRange");
         Button spawnVehiclesButton = new Button("Spawn Vehicles");
         Button spawnFakedVeehicle = new Button("Spawn fake vehicle");
+        TextField spawnFakedVeehicleTextField = new TextField();
         TextField vehiclesAmountField = new TextField();
         TextField rangeAmountField = new TextField();
         Label rangeAmountLabel = new Label("Range");
@@ -229,6 +230,8 @@ public class Main extends Application {
 
         spawnFakedVeehicle.setLayoutX(1130.0);
         spawnFakedVeehicle.setLayoutY(110.0);
+        spawnFakedVeehicleTextField.setLayoutX(1130);
+        spawnFakedVeehicleTextField.setLayoutY(50);
 
         showRangeButton.setLayoutX(950.0);
         showRangeButton.setLayoutY(80.0);
@@ -262,10 +265,12 @@ public class Main extends Application {
         });
 
         spawnFakedVeehicle.setOnAction(e -> {
-            simulation.getMap().addFakeVehicle(chooseFakeEvent.getValue().toString());
-            shapesCreator.setVehicleCircles(simulation, 1);
-            shapesCreator.setLabels(simulation, 1);
-
+            Integer numberOfFakeVehicle = Integer.valueOf(spawnFakedVeehicleTextField.getText());
+            for (int i = 0; i < numberOfFakeVehicle; i++) {
+                simulation.getMap().addFakeVehicle(chooseFakeEvent.getValue().toString());
+                shapesCreator.setVehicleCircles(simulation, 1);
+                shapesCreator.setLabels(simulation, 1);
+            }
         });
 
         spawnVehiclesButton.setOnAction(e -> {
@@ -278,6 +283,7 @@ public class Main extends Application {
         root.getChildren()
                 .addAll(chooseFakeEvent,
                         spawnFakedVeehicle,
+                        spawnFakedVeehicleTextField,
                         showRangeButton,
                         spawnVehiclesButton,
                         vehiclesAmountField,
