@@ -66,13 +66,13 @@ public class Map {
     }
 
     private void initMap() {
-        routes.add(new Route(200.0, 100.0, 200.0, 700.0));
-        routes.add(new Route(400.0, 100.0, 400.0, 700.0));
-        routes.add(new Route(600.0, 100.0, 600.0, 700.0));
-        routes.add(new Route(800.0, 100.0, 800.0, 700.0));
-        routes.add(new Route(100.0, 200.0, 900.0, 200.0));
-        routes.add(new Route(100.0, 400.0, 900.0, 400.0));
-        routes.add(new Route(100.0, 600.0, 900.0, 600.0));
+        routes.add(new Route(200.0, 100.0, 200.0, 700.0, 5));
+        routes.add(new Route(400.0, 100.0, 400.0, 700.0, 10));
+        routes.add(new Route(600.0, 100.0, 600.0, 700.0, 5));
+        routes.add(new Route(800.0, 100.0, 800.0, 700.0, 10));
+        routes.add(new Route(100.0, 200.0, 900.0, 200.0, 5));
+        routes.add(new Route(100.0, 400.0, 900.0, 400.0, 10));
+        routes.add(new Route(100.0, 600.0, 900.0, 600.0, 2));
 
         crossings.add(new Crossing(new Point(200.0, 200.0), routes.get(0), routes.get(4)));
         crossings.add(new Crossing(new Point(200.0, 400.0), routes.get(0), routes.get(5)));
@@ -87,9 +87,18 @@ public class Map {
         crossings.add(new Crossing(new Point(800.0, 400.0), routes.get(3), routes.get(5)));
         crossings.add(new Crossing(new Point(800.0, 600.0), routes.get(3), routes.get(6)));
 
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(0, new Point(480.0, 210.0), 30.0));
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(1, new Point(260.0, 610.0), 30.0));
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(2, new Point(480.0, 610.0), 30.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(0, new Point(200.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(1, new Point(200.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(3, new Point(200.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(4, new Point(400.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(5, new Point(400.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(6, new Point(400.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(7, new Point(600.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(8, new Point(600.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(9, new Point(600.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(10, new Point(800.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(11, new Point(800.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(12, new Point(800.0, 600.0), 110.0));
 
         eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
                 new Point(250.0, 210.0), new Date(), 20.0, EventType.CAR_ACCIDENT));

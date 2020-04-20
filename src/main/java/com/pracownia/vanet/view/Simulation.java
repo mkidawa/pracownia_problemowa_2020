@@ -28,6 +28,7 @@ public class Simulation implements Runnable {
     private Map map;
     private List<Circle> circleList;
     private List<Circle> rangeList;
+    private List<Circle> rangeRsuList;
     private List<Label> labelList;
     private List<Circle> stationaryCirclelist;
 
@@ -36,6 +37,7 @@ public class Simulation implements Runnable {
         map = new Map();
         circleList = new ArrayList<>();
         rangeList = new ArrayList<>();
+        rangeRsuList = new ArrayList<>();
         labelList = new ArrayList<>();
         stationaryCirclelist = new ArrayList<>();
         this.simulationRunning = false;
@@ -76,6 +78,12 @@ public class Simulation implements Runnable {
 
                 rangeList.get(it).setCenterX(vehicleX);
                 rangeList.get(it).setCenterY(vehicleY);
+
+                if(vehicle.isTooFast() == true){
+                    circleList.get(it).setFill(Color.GREEN);
+                }
+                else
+                    circleList.get(it).setFill(Color.BLACK);
 
                 if (vehicle.isSafe() != true) {
                     circleList.get(it).setFill(here);
@@ -185,10 +193,16 @@ public class Simulation implements Runnable {
         for (Circle rangeCircle : rangeList) {
             rangeCircle.setStroke(Color.TRANSPARENT);
         }
+        for (Circle rangeCircle : rangeRsuList) {
+            rangeCircle.setStroke(Color.TRANSPARENT);
+        }
     }
 
     public void switchOnRangeCircles() {
         for (Circle rangeCircle : rangeList) {
+            rangeCircle.setStroke(Color.BLACK);
+        }
+        for (Circle rangeCircle : rangeRsuList) {
             rangeCircle.setStroke(Color.BLACK);
         }
     }

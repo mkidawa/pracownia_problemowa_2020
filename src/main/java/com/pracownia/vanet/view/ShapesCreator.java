@@ -72,6 +72,16 @@ public class ShapesCreator {
         return circle;
     }
 
+    private Circle rangeCreator(NetworkPoint networkPoint) {
+        Circle circle = new Circle();
+        circle.setRadius(networkPoint.getRange());
+        circle.setCenterX(networkPoint.getCurrentLocation().getX());
+        circle.setCenterY(networkPoint.getCurrentLocation().getY());
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStroke(Color.TRANSPARENT);
+        return circle;
+    }
+
     private Circle rangeCreator(EventSource eventSource) {
         Circle circle = new Circle();
         circle.setRadius(eventSource.getRange());
@@ -142,8 +152,11 @@ public class ShapesCreator {
     public void setStationaryPointCircles(Simulation simulation) {
         for (int i = 0; i < simulation.getMap().getStationaryNetworkPoints().size(); i++) {
             Circle circle = circleCreator(simulation.getMap().getStationaryNetworkPoints().get(i));
+            Circle range = rangeCreator(simulation.getMap().getStationaryNetworkPoints().get(i));
             simulation.getStationaryCirclelist().add(circle);
+            simulation.getRangeRsuList().add(range);
             root.getChildren().add(circle);
+            root.getChildren().add(range);
         }
     }
 

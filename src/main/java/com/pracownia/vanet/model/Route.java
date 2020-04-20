@@ -14,6 +14,7 @@ public class Route {
     /*------------------------ FIELDS REGION ------------------------*/
     private Point startPoint;
     private Point endPoint;
+    private double speedLimit;
 
     /*------------------------ METHODS REGION ------------------------*/
     public Route() {
@@ -29,8 +30,14 @@ public class Route {
     public Route(double xStartPoint, double yStartPoint, double xEndPoint, double yEndPoint) {
         this.startPoint = new Point(xStartPoint, yStartPoint);
         this.endPoint = new Point(xEndPoint, yEndPoint);
-
     }
+
+    public Route(double xStartPoint, double yStartPoint, double xEndPoint, double yEndPoint, double speedLimit) {
+        this.startPoint = new Point(xStartPoint, yStartPoint);
+        this.endPoint = new Point(xEndPoint, yEndPoint);
+        this.speedLimit = speedLimit;
+    }
+
 
     public double getDistance() {
         return Math.sqrt(Math.pow(endPoint.getX() - startPoint.getX(), 2)

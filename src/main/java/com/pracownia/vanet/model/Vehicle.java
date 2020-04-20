@@ -32,9 +32,11 @@ public class Vehicle extends NetworkPoint {
     private boolean direction = true; // True if from starting point to end point
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
+
     private Date date;
     @Setter(AccessLevel.NONE)
     private Point previousCrossing;
+    private boolean tooFast;
     private boolean safe = true;
 
     /*------------------------ METHODS REGION ------------------------*/
@@ -43,6 +45,7 @@ public class Vehicle extends NetworkPoint {
         route = new Route();
         trustLevel = 0.5;
         currentLocation = new Point();
+        tooFast = false;
     }
 
     public Vehicle(Route route, int id, double range, double speed) {
@@ -52,6 +55,7 @@ public class Vehicle extends NetworkPoint {
         this.range = range;
         this.speed = speed + 0.001;
         trustLevel = 0.5;
+        tooFast = false;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
                 .getY());
     }
@@ -185,6 +189,12 @@ public class Vehicle extends NetworkPoint {
             direction = !direction;
         }
 
+        if(speed > route.getSpeedLimit()){
+            tooFast = true;
+            System.out.println("ID: "+id+" is riding too fast");
+        }
+        else
+            tooFast = false;
         //System.out.println(this.toString());
     }
 
