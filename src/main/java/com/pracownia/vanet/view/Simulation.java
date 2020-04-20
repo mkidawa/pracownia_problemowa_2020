@@ -62,6 +62,10 @@ public class Simulation implements Runnable {
             }
         }
     }
+    public Map getMap(){
+        return map;
+    }
+
 
     private void updateVehiclesPosition() {
         int it = 0;

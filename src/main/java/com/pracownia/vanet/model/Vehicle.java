@@ -29,6 +29,8 @@ public class Vehicle extends NetworkPoint {
     private Route route;
     private int iterator;
     private double speed;
+    private double changedSpeed;
+    private double defaultSpeed;
     private boolean direction = true; // True if from starting point to end point
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
     private List<HistoryPoint> log = new ArrayList<>();
@@ -51,6 +53,8 @@ public class Vehicle extends NetworkPoint {
         this.id = id;
         this.range = range;
         this.speed = speed + 0.001;
+        this.changedSpeed = speed;
+        this.defaultSpeed = speed;
         trustLevel = 0.5;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
     }
@@ -102,6 +106,26 @@ public class Vehicle extends NetworkPoint {
             }
         }
     }
+
+    public void reactOnEvent (Map map) {
+        List<EventSource> s  = map.getEventSources();
+
+        boolean inRange = false;
+        for(EventSource x : s){
+            if(x.isInRange(this.currentLocation)){
+                inRange = true;
+                break;
+            }
+        }
+        if (inRange) {
+            this.speed = changedSpeed;
+        }
+        else{
+            this.speed = defaultSpeed;
+        }
+    }
+
+
 
     public void sendEventsToConnectedPoints() {
         boolean flag;
@@ -158,6 +182,7 @@ public class Vehicle extends NetworkPoint {
             log.remove(0);
         }
         updateConnectedPoints(map);
+        reactOnEvent(map);
         sendEventsToConnectedPoints();
 
         double distanceToEndPoint = Math.sqrt(Math.pow(route.getEndPoint()
@@ -199,6 +224,10 @@ public class Vehicle extends NetworkPoint {
             }
         }
         return result;
+    }
+
+    public void setChangedSpeed(double s){
+        this.changedSpeed = s;
     }
 
     public void addFakeEvent(EventSource eventSource) {
