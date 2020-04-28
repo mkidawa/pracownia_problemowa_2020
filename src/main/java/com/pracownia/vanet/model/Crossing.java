@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @Getter
@@ -14,12 +16,12 @@ import java.util.Random;
 public class Crossing {
 
     /*------------------------ FIELDS REGION ------------------------*/
-    public static final double DETECTION_RANGE = 1.0;
+    public static final double DETECTION_RANGE = 3.0;
 
     private Point location;
     private Route routeA;
     private Route routeB;
-    private Vehicle lastTransportedVehicle = new Vehicle();
+    private List<Vehicle> vehicles = new ArrayList<>();
 
     /*------------------------ METHODS REGION ------------------------*/
     public Crossing(Point location, Route routeA, Route routeB) {
@@ -28,16 +30,35 @@ public class Crossing {
         this.routeB = routeB;
     }
 
+    private void changeRoute(Vehicle vehicle) {
+        if (vehicle.getRoute() == routeA) {
+            vehicle.setRoute(routeB);
+        } else {
+            vehicle.setRoute(routeA);
+        }
+    }
+
     public void transportVehicle(Vehicle vehicle) {
-        if (vehicle == lastTransportedVehicle) {
+        if (vehicle.getCurrentLane() == -1) {
+            this.changeRoute(vehicle);
+            if (vehicle.isNewDirectionGood()) {
+                vehicles.add(vehicle);
+                vehicle.changeDirection();
+                vehicle.tryToChangeTrafficLane();
+            }
             return;
         }
 
-        lastTransportedVehicle = vehicle;
+        if (vehicles.contains(vehicle)) {
+            return;
+        }
+
+        vehicles.add(vehicle);
+
         Random random = new Random();
         int pom = random.nextInt();
 
-        if (Math.abs(pom % 3) == 0 || Math.abs(pom % 3) == 1) {
+        if (Math.abs(pom % 3) == 0 || Math.abs(pom % 3) == 1 || vehicle.getCurrentLane() == -1) {
             if (vehicle.getRoute() == routeA) {
                 vehicle.setRoute(routeB);
             } else {
@@ -47,10 +68,12 @@ public class Crossing {
             vehicle.setCurrentLocation(new Point(location.getX(), location.getY()));
 
             if (Math.abs(pom % 3) == 0) {
-                vehicle.setDirection(!vehicle.isDirection());
+                if (vehicle.isNewDirectionGood())
+                    vehicle.changeDirection();
             }
-
         }
+
+        vehicle.tryToChangeTrafficLane();
 
         if (vehicle.getPreviousCrossing() != null && vehicle.getPreviousCrossing() != this.location) {
             double s = Math.sqrt(Math.pow((location.getX() - vehicle.getPreviousCrossing()
@@ -81,15 +104,8 @@ public class Crossing {
         vehicle.setPreviousCrossing(location);
     }
 
-    public double getDistanceToCrossing(Vehicle vehicle) {
-        return Math.sqrt(Math.pow(location.getX() - vehicle.getCurrentLocation().getX(), 2) +
-                Math.pow(location.getY() - vehicle.getCurrentLocation().getY(), 2));
-    }
-
-    public void resetLastTransportedVehicle() {
-        if (getDistanceToCrossing(lastTransportedVehicle) > Crossing.DETECTION_RANGE) {
-            lastTransportedVehicle = new Vehicle();
-        }
+    public void refreshVehicles() {
+        vehicles.removeIf(vehicle -> vehicle.getDistanceToCrossing(this) > Crossing.DETECTION_RANGE);
     }
 }
     

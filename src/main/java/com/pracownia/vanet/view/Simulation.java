@@ -67,7 +67,6 @@ public class Simulation implements Runnable {
 
     private void updateVehiclesPosition() {
         int it = 0;
-
         for (Vehicle vehicle : map.getVehicles()) {
             vehicle.update(map);
             try {
@@ -79,13 +78,7 @@ public class Simulation implements Runnable {
                 rangeList.get(it).setCenterX(vehicleX);
                 rangeList.get(it).setCenterY(vehicleY);
 
-                if(vehicle.isTooFast() == true){
-                    circleList.get(it).setFill(Color.GREEN);
-                }
-                else
-                    circleList.get(it).setFill(Color.BLACK);
-
-                if (vehicle.isSafe() != true) {
+                if (!vehicle.isSafe()) {
                     circleList.get(it).setFill(here);
                     //labelList.get(it).setText(String.valueOf(vehicle.getCollectedEvents().size
                     // ()));
@@ -100,6 +93,27 @@ public class Simulation implements Runnable {
                         labelList.get(it).setLayoutY(vehicleY);
                     }
                 }
+
+                if(vehicle.getCurrentLane() == -1){
+                    circleList.get(it).setFill(Color.BLACK);
+                }
+
+                if(vehicle.getCurrentLane() == 1){
+                    circleList.get(it).setFill(Color.AQUA);
+                }
+
+                if(vehicle.getCurrentLane() == 2){
+                    circleList.get(it).setFill(Color.GOLD);
+                }
+
+                if(vehicle.getCurrentLane() == 3){
+                    circleList.get(it).setFill(Color.CORAL);
+                }
+
+                if(vehicle.isTooFast()){
+                    circleList.get(it).setFill(Color.DARKRED);
+                }
+
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
@@ -110,10 +124,8 @@ public class Simulation implements Runnable {
     private void checkVehicleCrossing() {
         for (Vehicle vehicle : map.getVehicles()) {
             for (Crossing crossing : map.getCrossings()) {
-
-                if (crossing.getDistanceToCrossing(vehicle) < Crossing.DETECTION_RANGE) {
+                if (vehicle.getDistanceToCrossing(crossing) < Crossing.DETECTION_RANGE) {
                     crossing.transportVehicle(vehicle);
-
                 }
             }
         }
@@ -121,7 +133,7 @@ public class Simulation implements Runnable {
 
     private void resetReferences() {
         for (Crossing crossing : map.getCrossings()) {
-            crossing.resetLastTransportedVehicle();
+            crossing.refreshVehicles();
         }
     }
 
@@ -218,7 +230,9 @@ public class Simulation implements Runnable {
 
     public void teleportVehicle() {
 
-        if (map.getVehicles().size() < 0) {
+        if (map.getVehicles().size() == 0) {
+            Logger.log("Nothing to teleport");
+            System.out.println("Nothing to teleport");
             return;
         }
         Vehicle vehicle = map.getVehicles().get(new Random().nextInt(map.getVehicles().size()));

@@ -7,6 +7,8 @@ import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.model.event.EventType;
 import com.pracownia.vanet.model.point.Point;
 import com.pracownia.vanet.model.point.StationaryNetworkPoint;
+import com.pracownia.vanet.util.Logger;
+import com.sun.tools.javac.main.Option;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -66,13 +68,13 @@ public class Map {
     }
 
     private void initMap() {
-        routes.add(new Route(200.0, 100.0, 200.0, 700.0, 5));
-        routes.add(new Route(400.0, 100.0, 400.0, 700.0, 10));
-        routes.add(new Route(600.0, 100.0, 600.0, 700.0, 5));
-        routes.add(new Route(800.0, 100.0, 800.0, 700.0, 10));
-        routes.add(new Route(100.0, 200.0, 900.0, 200.0, 5));
-        routes.add(new Route(100.0, 400.0, 900.0, 400.0, 10));
-        routes.add(new Route(100.0, 600.0, 900.0, 600.0, 2));
+        routes.add(new Route(200.0, 75.0, 200.0, 725.0, 4,2,1));
+        routes.add(new Route(400.0, 75.0, 400.0, 725.0, 4,3,2));
+        routes.add(new Route(600.0, 75.0, 600.0, 725.0, 4,2,2));
+        routes.add(new Route(800.0, 75.0, 800.0, 725.0, 4,1,3));
+        routes.add(new Route(75.0, 200.0, 925.0, 200.0, 4,1,2));
+        routes.add(new Route(200.0, 400.0, 800.0, 400.0, 4,3,0));
+        routes.add(new Route(75.0, 600.0, 925.0, 600.0, 4,3,3));
 
         crossings.add(new Crossing(new Point(200.0, 200.0), routes.get(0), routes.get(4)));
         crossings.add(new Crossing(new Point(200.0, 400.0), routes.get(0), routes.get(5)));
@@ -114,7 +116,7 @@ public class Map {
         List<Integer> result = new ArrayList<>();
 
         for (int i = 0; i < vehicles.size(); i++) {
-            if (vehicles.get(i).isSafe() == false) {
+            if (!vehicles.get(i).isSafe()) {
                 result.add(i);
                 vehicles.remove(i);
                 i--;
@@ -126,16 +128,19 @@ public class Map {
 
     public void addVehicles(int amount) {
         Random random = new Random();
-
-        for (int i = 0; i < amount; i++) {
-            vehicles.add(new Vehicle(routes.get(i % 5), i, 40.0, random.nextDouble() / 2.0 + 2));
+        int numOfVehicles = vehicles.size();
+        for (int i = numOfVehicles; i < amount + numOfVehicles; i++) {
+            vehicles.add(new Vehicle(routes.get(i % 5), i, 40.0, random.nextDouble() * 4.0 + 2,random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
         }
     }
 
     public Vehicle addCopy() {
+        if (vehicles.size() == 0) {
+            throw new IllegalArgumentException();
+        }
         int r = new Random().nextInt(vehicles.size());
         Vehicle me = new Vehicle(vehicles.get(r).getRoute(), vehicles.get(r)
-                .getId(), vehicles.get(r).getRange(), vehicles.get(r).getSpeed());
+                .getId(), vehicles.get(r).getRange(), vehicles.get(r).getSpeed(), vehicles.get(r).getCurrentLane());
         vehicles.add(me);
 
         return me;
@@ -146,7 +151,7 @@ public class Map {
         int x = (int) (random.nextDouble() * 1000);
         int y = (int) (random.nextDouble() * 1000);
         Vehicle vehicle = new Vehicle(routes.get(99 % 5), fakeCarId, 40.0,
-                random.nextDouble() / 2.0 + 2);
+                random.nextDouble() / 2.0 + 2, 1);
         EventSource eventSource = new EventSource(fakeEventId, nameEvent, "Fake Car Accident",
                 new Point(x, y), new Date(), 20.0, EventType.CAR_ACCIDENT);
         vehicle.addFakeEvent(eventSource);

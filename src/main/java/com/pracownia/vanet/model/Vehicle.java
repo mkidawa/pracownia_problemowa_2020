@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -30,6 +31,7 @@ public class Vehicle extends NetworkPoint {
     private int iterator;
     private double speed;
     private boolean direction = true; // True if from starting point to end point
+    private int currentLane;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
 
@@ -40,20 +42,13 @@ public class Vehicle extends NetworkPoint {
     private boolean safe = true;
 
     /*------------------------ METHODS REGION ------------------------*/
-    public Vehicle() {
-        super();
-        route = new Route();
-        trustLevel = 0.5;
-        currentLocation = new Point();
-        tooFast = false;
-    }
-
-    public Vehicle(Route route, int id, double range, double speed) {
+    public Vehicle(Route route, int id, double range, double speed, int currentLane) {
         super();
         this.route = route;
         this.id = id;
         this.range = range;
         this.speed = speed + 0.001;
+        this.currentLane = currentLane;
         trustLevel = 0.5;
         tooFast = false;
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint()
@@ -66,7 +61,7 @@ public class Vehicle extends NetworkPoint {
     }
 
     public void setNotSafe(String mssg) {
-        if (this.safe == true) {
+        if (this.safe) {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
             Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
             System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
@@ -156,6 +151,45 @@ public class Vehicle extends NetworkPoint {
         }
     }
 
+    public void changeDirection() {
+        this.direction = !this.direction;
+    }
+
+    public void tryToChangeTrafficLane() {
+        Random random = new Random();
+        if (this.direction) {
+            if (random.nextInt(100) < 1 && this.route.getNumOfTLTS() != 0) {
+                this.currentLane = -1;
+            } else if (this.route.getNumOfTLTE() != 0) {
+                currentLane = random.nextInt(this.route.getNumOfTLTE())+1;
+            }
+        } else {
+            if (random.nextInt(100) < 1 && this.route.getNumOfTLTE() != 0) {
+                this.currentLane = -1;
+            } else if (this.route.getNumOfTLTS() != 0)
+                currentLane = random.nextInt(this.route.getNumOfTLTS())+1;
+        }
+        double multiplier = random.nextDouble() / 4;
+        if (random.nextInt(10) < 1) {
+            this.speed = route.getSpeedLimit() * (1 + multiplier);
+        } else {
+            this.speed = route.getSpeedLimit() * (1 - multiplier);
+        }
+
+    }
+
+    public boolean isNewDirectionGood() {
+        if ((this.direction && this.route.getNumOfTLTS() > 0) || (!this.direction && this.route.getNumOfTLTE() > 0)) {
+            return true;
+        }
+        return false;
+    }
+
+    public double getDistanceToCrossing(Crossing crossing) {
+        return Math.sqrt(Math.pow(crossing.getLocation().getX() - this.currentLocation.getX(), 2) +
+                Math.pow(crossing.getLocation().getY() - this.currentLocation.getY(), 2));
+    }
+
     @Override
     public void update(Map map) {
         updateConnectedPoints(map);
@@ -164,18 +198,29 @@ public class Vehicle extends NetworkPoint {
         double distanceToEndPoint = Math.sqrt(Math.pow(route.getEndPoint()
                 .getX() - currentLocation.getX(), 2) +
                 Math.pow(route.getEndPoint().getY() - currentLocation.getY(), 2));
-
+        if (distanceToEndPoint == 0) {
+            distanceToEndPoint = 1; // disappearing vehicles (NaN value in point)
+        }
         double cos = (route.getEndPoint().getX() - currentLocation.getX()) / distanceToEndPoint;
         double sin = (route.getEndPoint().getY() - currentLocation.getY()) / distanceToEndPoint;
 
         double distanceToStart;
-
+        Random random = new Random();
         if (direction) {
             distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getStartPoint()
                     .getX(), 2) +
                     Math.pow(currentLocation.getY() - route.getStartPoint().getY(), 2));
             currentLocation.setX(currentLocation.getX() + cos * speed);
             currentLocation.setY(currentLocation.getY() + sin * speed);
+            if (route.getNumOfTLTE() == 0) {
+                currentLane = -1;
+            } else {
+                int newLane = random.nextInt(route.getNumOfTLTE() * 100);
+                if (newLane < route.getNumOfTLTE()) {
+                    currentLane = newLane + 1;
+                }
+            }
+
         } else {
             distanceToStart = Math.sqrt(Math.pow(currentLocation.getX() - route.getEndPoint()
                     .getX(), 2) +
@@ -183,17 +228,24 @@ public class Vehicle extends NetworkPoint {
 
             currentLocation.setX(currentLocation.getX() - cos * speed);
             currentLocation.setY(currentLocation.getY() - sin * speed);
+            if (route.getNumOfTLTS() == 0) {
+                currentLane = -1;
+            } else {
+                int newLane = random.nextInt(route.getNumOfTLTS() * 100);
+                if (newLane < route.getNumOfTLTS()) {
+                    currentLane = newLane + 1;
+                }
+            }
         }
 
         if (distanceToStart >= route.getDistance()) {
             direction = !direction;
         }
 
-        if(speed > route.getSpeedLimit()){
+        if (speed > route.getSpeedLimit()) {
             tooFast = true;
-            System.out.println("ID: "+id+" is riding too fast");
-        }
-        else
+            //System.out.println("ID: "+id+" is riding too fast");
+        } else
             tooFast = false;
         //System.out.println(this.toString());
     }

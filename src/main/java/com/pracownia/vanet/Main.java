@@ -1,6 +1,7 @@
 package com.pracownia.vanet;
 
 import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.view.ShapesCreator;
 import com.pracownia.vanet.view.Simulation;
 import javafx.application.Application;
@@ -123,7 +124,12 @@ public class Main extends Application {
         addHackerVehicle.setLayoutX(1130.0);
         addHackerVehicle.setLayoutY(200.00);
         addHackerVehicle.setOnAction(e -> {
+            try {
             shapesCreator.setCopyCircle(simulation.getMap().addCopy());
+            } catch (IllegalArgumentException exception) {
+                Logger.log("Nothing to copy");
+                System.out.println("Nothing to copy");
+            }
         });
 
         Button teleportVehicle = new Button("Teleport a vehicle");
@@ -251,6 +257,15 @@ public class Main extends Application {
         vehiclesAmountField.setLayoutX(950.0);
         vehiclesAmountField.setLayoutY(240.0);
         vehiclesAmountField.setText("10");
+
+        shapesCreator.legendCreator(100,750, Color.BLACK, "Vehicle - wrong traffic lane");
+        shapesCreator.legendCreator(100,775, Color.AQUA, "Vehicle - traffic lane 1");
+        shapesCreator.legendCreator(100,800, Color.GOLD, "Vehicle - traffic lane 2");
+        shapesCreator.legendCreator(100,825, Color.CORAL, "Vehicle - traffic lane 3");
+        shapesCreator.legendCreator(300,750, Color.DARKRED, "Vehicle - too fast");
+        shapesCreator.legendCreator(300,775, Color.BLUE, "Stationary network point");
+        shapesCreator.legendCreator(300,800, Color.RED, "Route event");
+
 
         changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField
                 .getText())));
