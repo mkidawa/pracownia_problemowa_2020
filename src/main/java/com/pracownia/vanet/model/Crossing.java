@@ -1,14 +1,12 @@
 package com.pracownia.vanet.model;
 
 import com.pracownia.vanet.model.point.Point;
+import com.pracownia.vanet.util.Logger;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Getter
 @Setter
@@ -22,6 +20,7 @@ public class Crossing {
     private Route routeA;
     private Route routeB;
     private List<Vehicle> vehicles = new ArrayList<>();
+    private Set<Vehicle> hackers = new HashSet<>();
 
     /*------------------------ METHODS REGION ------------------------*/
     public Crossing(Point location, Route routeA, Route routeB) {
@@ -94,8 +93,10 @@ public class Crossing {
 
             if (Math.abs(v - vehicle.getSpeed()) > 0.5) {
                 vehicle.setNotSafe("Identified as attacker!");
+                hackers.add(vehicle);
             } else if (vehicle.getTrustLevel() < 0.3) {
                 vehicle.setNotSafe("Identified as attacker!");
+                hackers.add(vehicle);
             } else {
                 //System.out.println("Bezpiecznie.");
             }
@@ -106,6 +107,11 @@ public class Crossing {
 
     public void refreshVehicles() {
         vehicles.removeIf(vehicle -> vehicle.getDistanceToCrossing(this) > Crossing.DETECTION_RANGE);
+    }
+
+    public void logHackerCount(){
+        Logger.log("Crossing: " + location.toString() + "Hacker count: " + hackers.size());
+        System.out.println("Crossing: " + location.toString() + "Hacker count: " + hackers.size());
     }
 }
     

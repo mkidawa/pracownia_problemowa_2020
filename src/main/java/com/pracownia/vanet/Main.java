@@ -117,6 +117,7 @@ public class Main extends Application {
         stopSimulation.setLayoutY(340.);
         stopSimulation.setOnAction(e -> {
             simulation.setSimulationRunning(false);
+            simulation.logCrossingHackerCount();
             stopTimer();
         });
 

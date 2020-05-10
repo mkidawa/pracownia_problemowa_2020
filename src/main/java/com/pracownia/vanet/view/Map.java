@@ -7,8 +7,6 @@ import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.model.event.EventType;
 import com.pracownia.vanet.model.point.Point;
 import com.pracownia.vanet.model.point.StationaryNetworkPoint;
-import com.pracownia.vanet.util.Logger;
-import com.sun.tools.javac.main.Option;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -158,6 +156,10 @@ public class Map {
         vehicles.add(vehicle);
         fakeCarId--;
         fakeEventId--;
+    }
+
+    public void logCrossingHackerCount() {
+        crossings.forEach(Crossing::logHackerCount);
     }
 }
     

@@ -269,6 +269,10 @@ public class Simulation implements Runnable {
         //            i--;
         //        }
     }
+
+    public void logCrossingHackerCount(){
+        map.logCrossingHackerCount();
+    }
 /*
 	private void showVehiclesConnected(){
 		int it = 0;
