@@ -28,8 +28,8 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -126,12 +126,16 @@ public class Main extends Application {
             simulation.setSimulationRunning(false);
             stopTimer();
             simulation.logCrossingHackerCount();
-            //TODO CHANGE FOR REAL DATA
+
             try {
-                new FileWriterCsv()
-                        .writeCsvFile("Summary", new CsvRecord(1, 1, 1, 1.0,
-                                Stream.of(new CrossingPoint(1.0, 1.0, 1))
-                                        .collect(Collectors.toList())));
+                List<CrossingPoint> crossingPoints = new ArrayList<>();
+                simulation.getMap().getCrossings().forEach((it) -> {
+                    crossingPoints.add(new CrossingPoint(it.getLocation().getX(),
+                            it.getLocation().getY(), it.getHackers().size()));
+                });
+                new FileWriterCsv().writeCsvFile("Summary",
+                        //TODO CHANGE FOR REAL DATA
+                        new CsvRecord(1, 1, 1, 1.0, crossingPoints));
             } catch (FileOperationException ex) {
                 ex.printStackTrace();
             }
