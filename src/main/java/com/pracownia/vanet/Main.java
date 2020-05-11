@@ -2,6 +2,7 @@ package com.pracownia.vanet;
 
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.util.Logger;
+import com.pracownia.vanet.util.csv.CsvRecord;
 import com.pracownia.vanet.view.ShapesCreator;
 import com.pracownia.vanet.view.Simulation;
 import javafx.application.Application;
@@ -117,8 +118,10 @@ public class Main extends Application {
         stopSimulation.setLayoutY(340.);
         stopSimulation.setOnAction(e -> {
             simulation.setSimulationRunning(false);
-            simulation.logCrossingHackerCount();
             stopTimer();
+            simulation.logCrossingHackerCount();
+//            System.out.println(new CsvRecord());
+
         });
 
         Button addHackerVehicle = new Button("Add hacker vehicle");
