@@ -1,8 +1,11 @@
 package com.pracownia.vanet;
 
+import com.pracownia.vanet.exception.FileOperationException;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.util.Logger;
+import com.pracownia.vanet.util.csv.CrossingPoint;
 import com.pracownia.vanet.util.csv.CsvRecord;
+import com.pracownia.vanet.util.csv.FileWriterCsv;
 import com.pracownia.vanet.view.ShapesCreator;
 import com.pracownia.vanet.view.Simulation;
 import javafx.application.Application;
@@ -24,6 +27,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -120,7 +126,15 @@ public class Main extends Application {
             simulation.setSimulationRunning(false);
             stopTimer();
             simulation.logCrossingHackerCount();
-//            System.out.println(new CsvRecord());
+            //TODO CHANGE FOR REAL DATA
+            try {
+                new FileWriterCsv()
+                        .writeCsvFile("Summary", new CsvRecord(1, 1, 1, 1.0,
+                                Stream.of(new CrossingPoint(1.0, 1.0, 1))
+                                        .collect(Collectors.toList())));
+            } catch (FileOperationException ex) {
+                ex.printStackTrace();
+            }
 
         });
 
@@ -129,7 +143,7 @@ public class Main extends Application {
         addHackerVehicle.setLayoutY(200.00);
         addHackerVehicle.setOnAction(e -> {
             try {
-            shapesCreator.setCopyCircle(simulation.getMap().addCopy());
+                shapesCreator.setCopyCircle(simulation.getMap().addCopy());
             } catch (IllegalArgumentException exception) {
                 Logger.log("Nothing to copy");
                 System.out.println("Nothing to copy");
@@ -262,14 +276,13 @@ public class Main extends Application {
         vehiclesAmountField.setLayoutY(240.0);
         vehiclesAmountField.setText("10");
 
-        shapesCreator.legendCreator(100,750, Color.BLACK, "Vehicle - wrong traffic lane");
-        shapesCreator.legendCreator(100,775, Color.AQUA, "Vehicle - traffic lane 1");
-        shapesCreator.legendCreator(100,800, Color.GOLD, "Vehicle - traffic lane 2");
-        shapesCreator.legendCreator(100,825, Color.CORAL, "Vehicle - traffic lane 3");
-        shapesCreator.legendCreator(300,750, Color.DARKRED, "Vehicle - too fast");
-        shapesCreator.legendCreator(300,775, Color.BLUE, "Stationary network point");
-        shapesCreator.legendCreator(300,800, Color.RED, "Route event");
-
+        shapesCreator.legendCreator(100, 750, Color.BLACK, "Vehicle - wrong traffic lane");
+        shapesCreator.legendCreator(100, 775, Color.AQUA, "Vehicle - traffic lane 1");
+        shapesCreator.legendCreator(100, 800, Color.GOLD, "Vehicle - traffic lane 2");
+        shapesCreator.legendCreator(100, 825, Color.CORAL, "Vehicle - traffic lane 3");
+        shapesCreator.legendCreator(300, 750, Color.DARKRED, "Vehicle - too fast");
+        shapesCreator.legendCreator(300, 775, Color.BLUE, "Stationary network point");
+        shapesCreator.legendCreator(300, 800, Color.RED, "Route event");
 
         changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField
                 .getText())));

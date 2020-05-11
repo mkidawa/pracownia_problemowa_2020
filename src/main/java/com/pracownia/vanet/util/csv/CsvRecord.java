@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -26,6 +27,39 @@ public class CsvRecord {
         this.numberOfAttackers = numberOfAttackers;
         this.attackerToOrdinaryRatio = attackerToOrdinaryRatio;
         this.crossingPoints = crossingPoints;
+    }
+
+    public String[] getWholeHeader() {
+        List<String> list = new ArrayList<>();
+
+        list.add("timeToAllDetection");
+        list.add("numberOfOrdinaryVehicle");
+        list.add("numberOfAttackers");
+        list.add("attackerToOrdinaryRatio");
+
+        for (int i = 0; i < crossingPoints.size(); i++) {
+            list.add("X");
+            list.add("Y");
+            list.add("attackerNumber");
+        }
+
+        return list.stream().toArray(String[]::new);
+    }
+
+    public String[] toStringArray() {
+        List<String> list = new ArrayList<>();
+        list.add(String.valueOf(timeToAllDetection));
+        list.add(String.valueOf(numberOfOrdinaryVehicle));
+        list.add(String.valueOf(numberOfAttackers));
+        list.add(String.valueOf(attackerToOrdinaryRatio));
+
+        crossingPoints.forEach((it) -> {
+            list.add(String.valueOf(it.getPointX()));
+            list.add(String.valueOf(it.getPointY()));
+            list.add(String.valueOf(it.getNumberOfHackers()));
+        });
+
+        return list.stream().toArray(String[]::new);
     }
 
     @Override

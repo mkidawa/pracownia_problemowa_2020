@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Getter
-class CrossingPoint {
+public class CrossingPoint {
 
     /*------------------------ FIELDS REGION ------------------------*/
     private Double pointX;
