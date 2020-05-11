@@ -12,6 +12,7 @@ import java.util.List;
 public class CsvRecord {
 
     /*------------------------ FIELDS REGION ------------------------*/
+    private List<Integer> timeFromStartToDetection;
     private Integer timeToAllDetection;
     private Integer numberOfOrdinaryVehicle;
     private Integer numberOfAttackers;
@@ -19,9 +20,10 @@ public class CsvRecord {
     private List<CrossingPoint> crossingPoints;
 
     /*------------------------ METHODS REGION ------------------------*/
-    public CsvRecord(Integer timeToAllDetection, Integer numberOfOrdinaryVehicle,
-                     Integer numberOfAttackers, Double attackerToOrdinaryRatio,
-                     List<CrossingPoint> crossingPoints) {
+    public CsvRecord(List<Integer> timeFromStartToDetection, Integer timeToAllDetection,
+                     Integer numberOfOrdinaryVehicle, Integer numberOfAttackers,
+                     Double attackerToOrdinaryRatio, List<CrossingPoint> crossingPoints) {
+        this.timeFromStartToDetection = timeFromStartToDetection;
         this.timeToAllDetection = timeToAllDetection;
         this.numberOfOrdinaryVehicle = numberOfOrdinaryVehicle;
         this.numberOfAttackers = numberOfAttackers;
@@ -31,6 +33,10 @@ public class CsvRecord {
 
     public String[] getWholeHeader() {
         List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < timeFromStartToDetection.size(); i++) {
+            list.add("detection" + i);
+        }
 
         list.add("timeToAllDetection");
         list.add("numberOfOrdinaryVehicle");
@@ -48,6 +54,9 @@ public class CsvRecord {
 
     public String[] toStringArray() {
         List<String> list = new ArrayList<>();
+
+        timeFromStartToDetection.forEach((it) -> list.add(String.valueOf(it)));
+
         list.add(String.valueOf(timeToAllDetection));
         list.add(String.valueOf(numberOfOrdinaryVehicle));
         list.add(String.valueOf(numberOfAttackers));
@@ -75,6 +84,7 @@ public class CsvRecord {
         CsvRecord csvRecord = (CsvRecord) o;
 
         return new EqualsBuilder()
+                .append(timeFromStartToDetection, csvRecord.timeFromStartToDetection)
                 .append(timeToAllDetection, csvRecord.timeToAllDetection)
                 .append(numberOfOrdinaryVehicle, csvRecord.numberOfOrdinaryVehicle)
                 .append(numberOfAttackers, csvRecord.numberOfAttackers)
@@ -86,6 +96,7 @@ public class CsvRecord {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
+                .append(timeFromStartToDetection)
                 .append(timeToAllDetection)
                 .append(numberOfOrdinaryVehicle)
                 .append(numberOfAttackers)
@@ -97,6 +108,7 @@ public class CsvRecord {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+                .append("timeFromStartToDetection", timeFromStartToDetection)
                 .append("timeToAllDetection", timeToAllDetection)
                 .append("numberOfOrdinaryVehicle", numberOfOrdinaryVehicle)
                 .append("numberOfAttackers", numberOfAttackers)

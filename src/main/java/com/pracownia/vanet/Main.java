@@ -128,14 +128,20 @@ public class Main extends Application {
             simulation.logCrossingHackerCount();
 
             try {
+                //TODO CHANGE FOR REAL DATA
+                List<Integer> timeFromStartToDetection = new ArrayList<>();
+                //                timeFromStartToDetection.add(/* TODO FILL LIST*/);
+
                 List<CrossingPoint> crossingPoints = new ArrayList<>();
                 simulation.getMap().getCrossings().forEach((it) -> {
                     crossingPoints.add(new CrossingPoint(it.getLocation().getX(),
                             it.getLocation().getY(), it.getHackers().size()));
                 });
-                new FileWriterCsv().writeCsvFile("Summary",
-                        //TODO CHANGE FOR REAL DATA
-                        new CsvRecord(1, 1, 1, 1.0, crossingPoints));
+
+                CsvRecord csvRecord = new CsvRecord(timeFromStartToDetection,
+                        1, 1, 1, 1.0,
+                        crossingPoints);
+                new FileWriterCsv().writeCsvFile("Summary", csvRecord);
             } catch (FileOperationException ex) {
                 ex.printStackTrace();
             }
