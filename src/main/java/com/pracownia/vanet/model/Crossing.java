@@ -91,7 +91,7 @@ public class Crossing {
             //            System.out.println("pozycja skrzyzowania: " + location.getX() + " --- "
             //            + location.getY());
 
-            if (Math.abs(v - vehicle.getSpeed()) > 0.5) {
+            if(v>vehicle.getRoute().getSpeedLimit()*1.25) {
                 vehicle.setNotSafe("Identified as attacker!");
                 hackers.add(vehicle);
             } else if (vehicle.getTrustLevel() < 0.3) {
