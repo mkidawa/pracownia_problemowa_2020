@@ -128,7 +128,12 @@ public class Map {
         Random random = new Random();
         int numOfVehicles = vehicles.size();
         for (int i = numOfVehicles; i < amount + numOfVehicles; i++) {
-            vehicles.add(new Vehicle(routes.get(i % 5), i, 40.0, random.nextDouble() * 4.0 + 2,random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
+            vehicles.add(new Vehicle(
+                    routes.get(i % 5),
+                    i,
+                    40.0,
+                    random.nextDouble() * 4.0 + 2,
+                    random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
         }
     }
 

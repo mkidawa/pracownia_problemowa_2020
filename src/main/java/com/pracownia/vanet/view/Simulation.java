@@ -4,6 +4,8 @@ import com.pracownia.vanet.model.Crossing;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.Event;
 import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.event.EventType;
+import com.pracownia.vanet.model.point.Point;
 import com.pracownia.vanet.model.point.StationaryNetworkPoint;
 import com.pracownia.vanet.util.Logger;
 import javafx.scene.control.Label;
@@ -14,8 +16,11 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
+import static com.pracownia.vanet.util.Utils.setTimeout;
 
 @Getter
 @Setter
@@ -31,6 +36,7 @@ public class Simulation implements Runnable {
     private List<Circle> rangeRsuList;
     private List<Label> labelList;
     private List<Circle> stationaryCirclelist;
+    private static double DISTANCE_FOR_CRASH = 20.0;
 
     /*------------------------ METHODS REGION ------------------------*/
     public Simulation() {
@@ -54,6 +60,7 @@ public class Simulation implements Runnable {
                 checkVehicleEventSource();
                 updateStationaryPoints();
                 checkCopies();
+                checkAccident();
 
                 //showVehiclesConnected();
             }
@@ -94,23 +101,23 @@ public class Simulation implements Runnable {
                     }
                 }
 
-                if(vehicle.getCurrentLane() == -1){
+                if (vehicle.getCurrentLane() == -1) {
                     circleList.get(it).setFill(Color.BLACK);
                 }
 
-                if(vehicle.getCurrentLane() == 1){
+                if (vehicle.getCurrentLane() == 1) {
                     circleList.get(it).setFill(Color.AQUA);
                 }
 
-                if(vehicle.getCurrentLane() == 2){
+                if (vehicle.getCurrentLane() == 2) {
                     circleList.get(it).setFill(Color.GOLD);
                 }
 
-                if(vehicle.getCurrentLane() == 3){
+                if (vehicle.getCurrentLane() == 3) {
                     circleList.get(it).setFill(Color.CORAL);
                 }
 
-                if(vehicle.isTooFast()){
+                if (vehicle.isTooFast()) {
                     circleList.get(it).setFill(Color.DARKRED);
                 }
 
@@ -170,10 +177,11 @@ public class Simulation implements Runnable {
 
                     vehicle.getEncounteredEvents().add(eventSource.getEvent());
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + eventSource.getId() + " encountered"
-                            + " by Vehicle " + vehicle.getId());
-                    System.out.println("[" + timeStamp + "] Event " + eventSource.getId() + " "
-                            + "encountered by Vehicle " + vehicle.getId());
+                    String msg = "[" + timeStamp + "] Event " + eventSource.getId() +
+                            "[" + eventSource.getName() + "]"
+                            + " encountered" + " by Vehicle " + vehicle.getId();
+                    Logger.log(msg);
+                    System.out.println(msg);
                 }
             }
         }
@@ -244,6 +252,53 @@ public class Simulation implements Runnable {
 
     }
 
+    public void checkAccident() {
+        int size = map.getVehicles().size();
+        for (int i = 0; i < map.getVehicles().size(); i++) {
+            for (int j = i + 1; j < map.getVehicles().size(); j++) {
+                Vehicle a = map.getVehicles().get(i);
+                Vehicle b = map.getVehicles().get(j);
+//                System.out.println(a.getCurrentLocation().toString());
+//                System.out.println(b.getCurrentLocation().toString());
+                double distanceBetweenCars = a.getDistanceBetweenCar(b);
+//                System.out.println(distanceBetweenCars);
+                if (distanceBetweenCars < DISTANCE_FOR_CRASH) {
+                    if (a.getWhichWay().direction == b.getWhichWay().getOpposite())
+                        if (!a.isInAccident() || !b.isInAccident()) {
+                            a.setInAccident(true);
+                            b.setInAccident(true);
+                            a.setSpeed(0);
+                            b.setSpeed(0);
+                            setTimeout(() ->
+                            {
+                                a.setSpeed(1);
+                                b.setSpeed(1);
+
+                            }, 1000);
+                            setTimeout(() -> {
+                                a.setInAccident(false);
+                                b.setInAccident(false);
+                            }, 5000);
+                            String msg = "Vehicle " + a.getId() +
+                                    " crashed with Vehicle " + b.getId() +
+                                    "on pos [" + a.getCurrentLocation().getX() + "," + a.getCurrentLocation().getY() + "]";
+                            System.out.println(msg);
+                            int uniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+                            map.getEventSources().add(new EventSource(
+                                    uniqueId,
+                                    "Car Accident",
+                                    "Serious Car Accident",
+                                    new Point(a.getCurrentLocation().getX(), a.getCurrentLocation().getY()),
+                                    new Date(),
+                                    30.0,
+                                    EventType.CAR_ACCIDENT));
+                        }
+//
+                }
+            }
+        }
+    }
+
     public void checkCopies() {
         int size = map.getVehicles().size();
         for (int i = 0; i < map.getVehicles().size(); i++) {
@@ -268,7 +323,7 @@ public class Simulation implements Runnable {
         //        }
     }
 
-    public void logCrossingHackerCount(){
+    public void logCrossingHackerCount() {
         map.logCrossingHackerCount();
     }
 /*

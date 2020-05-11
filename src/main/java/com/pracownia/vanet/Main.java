@@ -36,6 +36,7 @@ public class Main extends Application {
     private TextField connEventsField;
     private TextField connVehField;
     private TextField connPointsField;
+    private TextField directionField;
     private Group root = new Group();
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
@@ -207,6 +208,14 @@ public class Main extends Application {
         connVehLabel.setLayoutX(950.0);
         connVehLabel.setLayoutY(730.0);
 
+        this.directionField = new TextField();
+        directionField.setLayoutX(950.0);
+        directionField.setLayoutY(760.0);
+
+        Label directionLabel = new Label("Direction");
+        directionLabel.setLayoutX(950.0);
+        directionLabel.setLayoutY(790.0);
+
         ListView<Vehicle> hackerVehiclesList = new ListView<>();
         hackerVehiclesList.setLayoutX(1125.0);
         hackerVehiclesList.setLayoutY(350.0);
@@ -317,6 +326,8 @@ public class Main extends Application {
                         connEventsLabel,
                         connVehField,
                         connVehLabel,
+                        directionField,
+                        directionLabel,
                         startSimulation,
                         vehiclesAmountLabel,
                         rangeAmountLabel,
