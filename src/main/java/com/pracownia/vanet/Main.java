@@ -133,8 +133,8 @@ public class Main extends Application {
                 List<Double> timeFromStartToDetection = new ArrayList<>();
                 simulation.getMap().getVehicles().forEach((it) -> {
                     if(!it.isSafe()) {
-                        double timeInMilis = (it.getDetectionTime().getTime() - startTime) / 1000.0;
-                        timeFromStartToDetection.add(timeInMilis);
+                        double timeInMillis = (it.getDetectionTime().getTime() - startTime) / 1000.0;
+                        timeFromStartToDetection.add(timeInMillis);
                     }
                 });
                 Collections.sort(timeFromStartToDetection);
