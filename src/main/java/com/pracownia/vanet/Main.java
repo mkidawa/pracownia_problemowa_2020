@@ -138,8 +138,10 @@ public class Main extends Application {
                             it.getLocation().getY(), it.getHackers().size()));
                 });
 
+                double attackerToOrdinaryRatio = (double) simulation.getMap().getNrOfFakeVehicles() / (simulation.getMap().getNrOfNormalVehicles() + simulation.getMap().getNrOfFakeVehicles());
+
                 CsvRecord csvRecord = new CsvRecord(timeFromStartToDetection,
-                        1, 1, 1, 1.0,
+                        1, simulation.getMap().getNrOfNormalVehicles(), simulation.getMap().getNrOfFakeVehicles(), attackerToOrdinaryRatio,
                         crossingPoints);
                 new FileWriterCsv().writeCsvFile("Summary", csvRecord);
             } catch (FileOperationException ex) {

@@ -24,7 +24,8 @@ public class Map {
     /*------------------------ FIELDS REGION ------------------------*/
     private double width = 1000.0;
     private double height = 900.0;
-
+    private int nrOfNormalVehicles = 0;
+    private int nrOfFakeVehicles = 0;
     private static int fakeCarId = -666;
     private static int fakeEventId = -1;
 
@@ -63,6 +64,22 @@ public class Map {
         stationaryNetworkPoints = new ArrayList<>();
         initMap();
 
+    }
+
+    public int getNrOfNormalVehicles() {
+        return nrOfNormalVehicles;
+    }
+
+    public void setNrOfNormalVehicles(int nrOfNormalVehicles) {
+        this.nrOfNormalVehicles = nrOfNormalVehicles;
+    }
+
+    public int getNrOfFakeVehicles() {
+        return nrOfFakeVehicles;
+    }
+
+    public void setNrOfFakeVehicles(int nrOfFakeVehicles) {
+        this.nrOfFakeVehicles = nrOfFakeVehicles;
     }
 
     private void initMap() {
@@ -129,6 +146,7 @@ public class Map {
         int numOfVehicles = vehicles.size();
         for (int i = numOfVehicles; i < amount + numOfVehicles; i++) {
             vehicles.add(new Vehicle(routes.get(i % 5), i, 40.0, random.nextDouble() * 4.0 + 2,random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
+            setNrOfNormalVehicles(getNrOfNormalVehicles() + 1);
         }
     }
 
@@ -156,6 +174,7 @@ public class Map {
         vehicles.add(vehicle);
         fakeCarId--;
         fakeEventId--;
+        setNrOfFakeVehicles(getNrOfFakeVehicles() + 1);
     }
 
     public void logCrossingHackerCount() {
