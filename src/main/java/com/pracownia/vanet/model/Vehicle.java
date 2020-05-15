@@ -34,6 +34,7 @@ public class Vehicle extends NetworkPoint {
     private int currentLane;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
 
+    private Timestamp detectionTime;
 
     private Date date;
     @Setter(AccessLevel.NONE)
@@ -65,8 +66,17 @@ public class Vehicle extends NetworkPoint {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
             Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
             System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            setDetectionTime(timeStamp);
             this.safe = false;
         }
+    }
+
+    public Timestamp getDetectionTime() {
+        return detectionTime;
+    }
+
+    public void setDetectionTime(Timestamp detectionTime) {
+        this.detectionTime = detectionTime;
     }
 
     @Override

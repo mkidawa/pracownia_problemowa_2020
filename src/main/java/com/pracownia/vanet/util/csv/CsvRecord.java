@@ -12,15 +12,15 @@ import java.util.List;
 public class CsvRecord {
 
     /*------------------------ FIELDS REGION ------------------------*/
-    private List<Integer> timeFromStartToDetection;
-    private Integer timeToAllDetection;
+    private List<Double> timeFromStartToDetection;
+    private double timeToAllDetection;
     private Integer numberOfOrdinaryVehicle;
     private Integer numberOfAttackers;
     private Double attackerToOrdinaryRatio;
     private List<CrossingPoint> crossingPoints;
 
     /*------------------------ METHODS REGION ------------------------*/
-    public CsvRecord(List<Integer> timeFromStartToDetection, Integer timeToAllDetection,
+    public CsvRecord(List<Double> timeFromStartToDetection, double timeToAllDetection,
                      Integer numberOfOrdinaryVehicle, Integer numberOfAttackers,
                      Double attackerToOrdinaryRatio, List<CrossingPoint> crossingPoints) {
         this.timeFromStartToDetection = timeFromStartToDetection;

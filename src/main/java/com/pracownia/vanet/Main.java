@@ -29,6 +29,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -128,9 +130,14 @@ public class Main extends Application {
             simulation.logCrossingHackerCount();
 
             try {
-                //TODO CHANGE FOR REAL DATA
-                List<Integer> timeFromStartToDetection = new ArrayList<>();
-                //                timeFromStartToDetection.add(/* TODO FILL LIST*/);
+                List<Double> timeFromStartToDetection = new ArrayList<>();
+                simulation.getMap().getVehicles().forEach((it) -> {
+                    if(!it.isSafe()) {
+                        double timeInMilis = (it.getDetectionTime().getTime() - startTime) / 1000.0;
+                        timeFromStartToDetection.add(timeInMilis);
+                    }
+                });
+                Collections.sort(timeFromStartToDetection);
 
                 List<CrossingPoint> crossingPoints = new ArrayList<>();
                 simulation.getMap().getCrossings().forEach((it) -> {
@@ -139,9 +146,8 @@ public class Main extends Application {
                 });
 
                 double attackerToOrdinaryRatio = (double) simulation.getMap().getNrOfFakeVehicles() / (simulation.getMap().getNrOfNormalVehicles() + simulation.getMap().getNrOfFakeVehicles());
-
                 CsvRecord csvRecord = new CsvRecord(timeFromStartToDetection,
-                        1, simulation.getMap().getNrOfNormalVehicles(), simulation.getMap().getNrOfFakeVehicles(), attackerToOrdinaryRatio,
+                        timeFromStartToDetection.get(timeFromStartToDetection.size() - 1), simulation.getMap().getNrOfNormalVehicles(), simulation.getMap().getNrOfFakeVehicles(), attackerToOrdinaryRatio,
                         crossingPoints);
                 new FileWriterCsv().writeCsvFile("Summary", csvRecord);
             } catch (FileOperationException ex) {
