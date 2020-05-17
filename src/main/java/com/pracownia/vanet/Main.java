@@ -24,6 +24,8 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 public class Main extends Application {
@@ -101,8 +103,27 @@ public class Main extends Application {
         TextField rangeAmountField = new TextField();
         Label rangeAmountLabel = new Label("Range");
         Label vehiclesAmountLabel = new Label("Vehicle Amount");
-        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(
-                "Car accident", "Speed camera", "Police control"));
+
+        String events[] = {"No event", "Car accident", "Speed camera", "Police control"};
+        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(events));
+
+        chooseFakeEvent.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue ov, Number value, Number new_value) {
+                //car accident
+                if(new_value.intValue() == 1){
+                    simulation.getMap().changeVehiclesSpeed(1);
+                }
+                //speed camera
+                if(new_value.intValue() == 2){
+                    simulation.getMap().changeVehiclesSpeed(3);
+                }
+                //police control
+                if(new_value.intValue() == 3){
+                    simulation.getMap().changeVehiclesSpeed(5);
+                }
+            }
+        });
 
         // Start stop simulation.
         Button startSimulation = new Button("Start simulation");
@@ -242,7 +263,7 @@ public class Main extends Application {
         // Other stuff.
         chooseFakeEvent.setLayoutX(1130.0);
         chooseFakeEvent.setLayoutY(80.0);
-        chooseFakeEvent.setValue("Car accident");
+        chooseFakeEvent.setValue("No event");
 
         spawnFakedVeehicle.setLayoutX(1130.0);
         spawnFakedVeehicle.setLayoutY(110.0);

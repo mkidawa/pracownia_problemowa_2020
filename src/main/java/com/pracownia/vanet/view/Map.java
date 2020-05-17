@@ -59,7 +59,7 @@ public class Map {
 
         hackers = FXCollections.observableArrayList();
         crossings = new ArrayList<>();
-        eventSources = new ArrayList<>();
+        eventSources = FXCollections.observableArrayList();
         stationaryNetworkPoints = new ArrayList<>();
         initMap();
 
@@ -100,21 +100,21 @@ public class Map {
         stationaryNetworkPoints.add(new StationaryNetworkPoint(11, new Point(800.0, 400.0), 110.0));
         stationaryNetworkPoints.add(new StationaryNetworkPoint(12, new Point(800.0, 600.0), 110.0));
 
-        /*eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
-                new Point(250.0, 210.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
-
-        eventSources.add(new EventSource(1, "Car Accident", "Serious Car Accident",
-                new Point(500.0, 410.0), new Date(), 20.0, EventType.CAR_ACCIDENT));
-
-        eventSources.add(new EventSource(2, "Car Accident", "Serious Car Accident",
-                new Point(750.0, 610.0), new Date(), 20.0, EventType.CAR_ACCIDENT));*/
+        eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
+                new Point(250.0, 210.0), new Date(), 30.0, EventType.CAR_ACCIDENT));
+//
+//        eventSources.add(new EventSource(1, "TRAFFIC_JAM", "Serious TRAFFIC_JAM",
+//                new Point(500.0, 410.0), new Date(), 30.0, EventType.TRAFFIC_JAM));
+//
+//        eventSources.add(new EventSource(2, "POLICE_CONTROL", "Serious POLICE_CONTROL",
+//                new Point(750.0, 610.0), new Date(), 30.0, EventType.POLICE_CONTROL));
     }
 
     public List<Integer> deleteUnsafeVehicles() {
         List<Integer> result = new ArrayList<>();
 
         for (int i = 0; i < vehicles.size(); i++) {
-            if (!vehicles.get(i).isSafe()) {
+            if (vehicles.get(i).isSafe() == false) {
                 result.add(i);
                 vehicles.remove(i);
                 i--;
@@ -134,6 +134,12 @@ public class Map {
                     40.0,
                     random.nextDouble() * 4.0 + 2,
                     random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
+        }
+    }
+
+    public void changeVehiclesSpeed(double value) {
+        for(Vehicle v : vehicles){
+            v.setChangedSpeed(value);
         }
     }
 

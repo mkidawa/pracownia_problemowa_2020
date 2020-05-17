@@ -72,6 +72,12 @@ public class Simulation implements Runnable {
         }
     }
 
+
+    public Map getMap() {
+        return map;
+    }
+
+
     private void updateVehiclesPosition() {
         int it = 0;
         for (Vehicle vehicle : map.getVehicles()) {
@@ -292,6 +298,7 @@ public class Simulation implements Runnable {
                                     new Date(),
                                     30.0,
                                     EventType.CAR_ACCIDENT));
+                            System.out.println(map.getEventSources().toString());
                         }
 //
                 }
