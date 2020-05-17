@@ -1,6 +1,8 @@
 package com.pracownia.vanet;
 
 import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.view.ShapesCreator;
 import com.pracownia.vanet.view.Simulation;
 import javafx.application.Application;
@@ -8,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -37,6 +40,7 @@ public class Main extends Application {
     private TextField connEventsField;
     private TextField connVehField;
     private TextField connPointsField;
+    private TextField directionField;
     private Group root = new Group();
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
@@ -96,6 +100,7 @@ public class Main extends Application {
         Button changeRangeButton = new Button("ChangeRange");
         Button spawnVehiclesButton = new Button("Spawn Vehicles");
         Button spawnFakedVeehicle = new Button("Spawn fake vehicle");
+        TextField spawnFakedVeehicleTextField = new TextField();
         TextField vehiclesAmountField = new TextField();
         TextField rangeAmountField = new TextField();
         Label rangeAmountLabel = new Label("Range");
@@ -122,6 +127,18 @@ public class Main extends Application {
             }
         });
 
+        simulation.getMap().getEventSources().addListener(new ListChangeListener<EventSource>(){
+            @Override
+            public void onChanged(Change<? extends EventSource> change) {
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        shapesCreator.setSourceEventCircles(simulation);
+                    }
+                });
+            }
+
+        });
+
         // Start stop simulation.
         Button startSimulation = new Button("Start simulation");
         startSimulation.setLayoutX(950.0);
@@ -136,6 +153,7 @@ public class Main extends Application {
         stopSimulation.setLayoutY(340.);
         stopSimulation.setOnAction(e -> {
             simulation.setSimulationRunning(false);
+            simulation.logCrossingHackerCount();
             stopTimer();
         });
 
@@ -143,7 +161,12 @@ public class Main extends Application {
         addHackerVehicle.setLayoutX(1130.0);
         addHackerVehicle.setLayoutY(200.00);
         addHackerVehicle.setOnAction(e -> {
+            try {
             shapesCreator.setCopyCircle(simulation.getMap().addCopy());
+            } catch (IllegalArgumentException exception) {
+                Logger.log("Nothing to copy");
+                System.out.println("Nothing to copy");
+            }
         });
 
         Button teleportVehicle = new Button("Teleport a vehicle");
@@ -220,6 +243,14 @@ public class Main extends Application {
         connVehLabel.setLayoutX(950.0);
         connVehLabel.setLayoutY(730.0);
 
+        this.directionField = new TextField();
+        directionField.setLayoutX(950.0);
+        directionField.setLayoutY(760.0);
+
+        Label directionLabel = new Label("Direction");
+        directionLabel.setLayoutX(950.0);
+        directionLabel.setLayoutY(790.0);
+
         ListView<Vehicle> hackerVehiclesList = new ListView<>();
         hackerVehiclesList.setLayoutX(1125.0);
         hackerVehiclesList.setLayoutY(350.0);
@@ -250,6 +281,8 @@ public class Main extends Application {
 
         spawnFakedVeehicle.setLayoutX(1130.0);
         spawnFakedVeehicle.setLayoutY(110.0);
+        spawnFakedVeehicleTextField.setLayoutX(1130);
+        spawnFakedVeehicleTextField.setLayoutY(50);
 
         showRangeButton.setLayoutX(950.0);
         showRangeButton.setLayoutY(80.0);
@@ -270,6 +303,15 @@ public class Main extends Application {
         vehiclesAmountField.setLayoutY(240.0);
         vehiclesAmountField.setText("10");
 
+        shapesCreator.legendCreator(100,750, Color.BLACK, "Vehicle - wrong traffic lane");
+        shapesCreator.legendCreator(100,775, Color.AQUA, "Vehicle - traffic lane 1");
+        shapesCreator.legendCreator(100,800, Color.GOLD, "Vehicle - traffic lane 2");
+        shapesCreator.legendCreator(100,825, Color.CORAL, "Vehicle - traffic lane 3");
+        shapesCreator.legendCreator(300,750, Color.DARKRED, "Vehicle - too fast");
+        shapesCreator.legendCreator(300,775, Color.BLUE, "Stationary network point");
+        shapesCreator.legendCreator(300,800, Color.RED, "Route event");
+
+
         changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField
                 .getText())));
 
@@ -283,10 +325,12 @@ public class Main extends Application {
         });
 
         spawnFakedVeehicle.setOnAction(e -> {
-            simulation.getMap().addFakeVehicle(chooseFakeEvent.getValue().toString());
-            shapesCreator.setVehicleCircles(simulation, 1);
-            shapesCreator.setLabels(simulation, 1);
-
+            Integer numberOfFakeVehicle = Integer.valueOf(spawnFakedVeehicleTextField.getText());
+            for (int i = 0; i < numberOfFakeVehicle; i++) {
+                simulation.getMap().addFakeVehicle(chooseFakeEvent.getValue().toString());
+                shapesCreator.setVehicleCircles(simulation, 1);
+                shapesCreator.setLabels(simulation, 1);
+            }
         });
 
         spawnVehiclesButton.setOnAction(e -> {
@@ -299,6 +343,7 @@ public class Main extends Application {
         root.getChildren()
                 .addAll(chooseFakeEvent,
                         spawnFakedVeehicle,
+                        spawnFakedVeehicleTextField,
                         showRangeButton,
                         spawnVehiclesButton,
                         vehiclesAmountField,
@@ -316,6 +361,8 @@ public class Main extends Application {
                         connEventsLabel,
                         connVehField,
                         connVehLabel,
+                        directionField,
+                        directionLabel,
                         startSimulation,
                         vehiclesAmountLabel,
                         rangeAmountLabel,

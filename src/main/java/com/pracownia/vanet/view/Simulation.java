@@ -4,6 +4,8 @@ import com.pracownia.vanet.model.Crossing;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.Event;
 import com.pracownia.vanet.model.event.EventSource;
+import com.pracownia.vanet.model.event.EventType;
+import com.pracownia.vanet.model.point.Point;
 import com.pracownia.vanet.model.point.StationaryNetworkPoint;
 import com.pracownia.vanet.util.Logger;
 import javafx.scene.control.Label;
@@ -14,8 +16,11 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
+import static com.pracownia.vanet.util.Utils.setTimeout;
 
 @Getter
 @Setter
@@ -28,14 +33,17 @@ public class Simulation implements Runnable {
     private Map map;
     private List<Circle> circleList;
     private List<Circle> rangeList;
+    private List<Circle> rangeRsuList;
     private List<Label> labelList;
     private List<Circle> stationaryCirclelist;
+    private static double DISTANCE_FOR_CRASH = 10.0;
 
     /*------------------------ METHODS REGION ------------------------*/
     public Simulation() {
         map = new Map();
         circleList = new ArrayList<>();
         rangeList = new ArrayList<>();
+        rangeRsuList = new ArrayList<>();
         labelList = new ArrayList<>();
         stationaryCirclelist = new ArrayList<>();
         this.simulationRunning = false;
@@ -52,6 +60,7 @@ public class Simulation implements Runnable {
                 checkVehicleEventSource();
                 updateStationaryPoints();
                 checkCopies();
+                checkAccident();
 
                 //showVehiclesConnected();
             }
@@ -62,14 +71,15 @@ public class Simulation implements Runnable {
             }
         }
     }
-    public Map getMap(){
+
+
+    public Map getMap() {
         return map;
     }
 
 
     private void updateVehiclesPosition() {
         int it = 0;
-
         for (Vehicle vehicle : map.getVehicles()) {
             vehicle.update(map);
             try {
@@ -81,7 +91,7 @@ public class Simulation implements Runnable {
                 rangeList.get(it).setCenterX(vehicleX);
                 rangeList.get(it).setCenterY(vehicleY);
 
-                if (vehicle.isSafe() != true) {
+                if (!vehicle.isSafe()) {
                     circleList.get(it).setFill(here);
                     //labelList.get(it).setText(String.valueOf(vehicle.getCollectedEvents().size
                     // ()));
@@ -96,6 +106,27 @@ public class Simulation implements Runnable {
                         labelList.get(it).setLayoutY(vehicleY);
                     }
                 }
+
+                if (vehicle.getCurrentLane() == -1) {
+                    circleList.get(it).setFill(Color.BLACK);
+                }
+
+                if (vehicle.getCurrentLane() == 1) {
+                    circleList.get(it).setFill(Color.AQUA);
+                }
+
+                if (vehicle.getCurrentLane() == 2) {
+                    circleList.get(it).setFill(Color.GOLD);
+                }
+
+                if (vehicle.getCurrentLane() == 3) {
+                    circleList.get(it).setFill(Color.CORAL);
+                }
+
+                if (vehicle.isTooFast()) {
+                    circleList.get(it).setFill(Color.DARKRED);
+                }
+
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
@@ -106,10 +137,8 @@ public class Simulation implements Runnable {
     private void checkVehicleCrossing() {
         for (Vehicle vehicle : map.getVehicles()) {
             for (Crossing crossing : map.getCrossings()) {
-
-                if (crossing.getDistanceToCrossing(vehicle) < Crossing.DETECTION_RANGE) {
+                if (vehicle.getDistanceToCrossing(crossing) < Crossing.DETECTION_RANGE) {
                     crossing.transportVehicle(vehicle);
-
                 }
             }
         }
@@ -117,7 +146,7 @@ public class Simulation implements Runnable {
 
     private void resetReferences() {
         for (Crossing crossing : map.getCrossings()) {
-            crossing.resetLastTransportedVehicle();
+            crossing.refreshVehicles();
         }
     }
 
@@ -154,10 +183,11 @@ public class Simulation implements Runnable {
 
                     vehicle.getEncounteredEvents().add(eventSource.getEvent());
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + eventSource.getId() + " encountered"
-                            + " by Vehicle " + vehicle.getId());
-                    System.out.println("[" + timeStamp + "] Event " + eventSource.getId() + " "
-                            + "encountered by Vehicle " + vehicle.getId());
+                    String msg = "[" + timeStamp + "] Event " + eventSource.getId() +
+                            "[" + eventSource.getName() + "]"
+                            + " encountered" + " by Vehicle " + vehicle.getId();
+                    Logger.log(msg);
+                    System.out.println(msg);
                 }
             }
         }
@@ -187,10 +217,16 @@ public class Simulation implements Runnable {
         for (Circle rangeCircle : rangeList) {
             rangeCircle.setStroke(Color.TRANSPARENT);
         }
+        for (Circle rangeCircle : rangeRsuList) {
+            rangeCircle.setStroke(Color.TRANSPARENT);
+        }
     }
 
     public void switchOnRangeCircles() {
         for (Circle rangeCircle : rangeList) {
+            rangeCircle.setStroke(Color.BLACK);
+        }
+        for (Circle rangeCircle : rangeRsuList) {
             rangeCircle.setStroke(Color.BLACK);
         }
     }
@@ -206,7 +242,9 @@ public class Simulation implements Runnable {
 
     public void teleportVehicle() {
 
-        if (map.getVehicles().size() < 0) {
+        if (map.getVehicles().size() == 0) {
+            Logger.log("Nothing to teleport");
+            System.out.println("Nothing to teleport");
             return;
         }
         Vehicle vehicle = map.getVehicles().get(new Random().nextInt(map.getVehicles().size()));
@@ -218,6 +256,59 @@ public class Simulation implements Runnable {
 
     public void addHacker() {
 
+    }
+
+    public void checkAccident() {
+        int size = map.getVehicles().size();
+        for (int i = 0; i < map.getVehicles().size(); i++) {
+            for (int j = i + 1; j < map.getVehicles().size(); j++) {
+                Vehicle a = map.getVehicles().get(i);
+                Vehicle b = map.getVehicles().get(j);
+//                System.out.println(a.getCurrentLocation().toString());
+//                System.out.println(b.getCurrentLocation().toString());
+                double distanceBetweenCars = a.getDistanceBetweenCar(b);
+//                System.out.println(distanceBetweenCars);
+                if (distanceBetweenCars < DISTANCE_FOR_CRASH) {
+                    if (a.getWhichWay().direction == b.getWhichWay().getOpposite() && (a.getLane() == b.getLane() || a.getLane() == -1 || b.getLane() == -1))
+                        if (!a.isInAccident() || !b.isInAccident()) {
+                            a.setInAccident(true);
+                            b.setInAccident(true);
+                            a.setSpeed(0);
+                            b.setSpeed(0);
+//                            setTimeout(() ->
+//                            {
+//                                a.setDefaultSpeed();
+//                                b.setDefaultSpeed();
+//                            }, 1000);
+//                            setTimeout(() -> {
+//                                a.setInAccident(false);
+//                                b.setInAccident(false);
+//                            }, 10000);
+                            String msg = "Vehicle " + a.getId() +
+                                    " crashed with Vehicle " + b.getId() +
+                                    "on pos [" + a.getCurrentLocation().getX() + "," + a.getCurrentLocation().getY() + "]";
+                            System.out.println(msg);
+
+                            int uniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+                            map.getEventSources().add(new EventSource(
+                                    uniqueId,
+                                    "Car Accident",
+                                    "Serious Car Accident",
+                                    new Point(a.getCurrentLocation().getX(), a.getCurrentLocation().getY()),
+                                    new Date(),
+                                    15.0,
+                                    EventType.CAR_ACCIDENT));
+
+//                            setTimeout(() -> {
+//                                map.getEventSources().remove(uniqueId);
+//                            }, 10000);
+
+                            System.out.println(map.getEventSources().toString());
+                        }
+//
+                }
+            }
+        }
     }
 
     public void checkCopies() {
@@ -242,6 +333,10 @@ public class Simulation implements Runnable {
         //            rangeList.remove(which.get(i));
         //            i--;
         //        }
+    }
+
+    public void logCrossingHackerCount() {
+        map.logCrossingHackerCount();
     }
 /*
 	private void showVehiclesConnected(){

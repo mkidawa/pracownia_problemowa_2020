@@ -40,6 +40,7 @@ public class ShapesCreator {
             main.getConnPointsField().setText(String.valueOf(vehicle.getConnectedPoints().size()));
             main.getConnVehField().setText(String.valueOf(vehicle.getConnectedVehicles().size()));
             main.getConnEventsField().setText(String.valueOf(vehicle.getCollectedEvents().size()));
+//            main.getDirectionField().setText(String.valueOf(vehicle.d));
         });
         return circle;
     }
@@ -51,6 +52,20 @@ public class ShapesCreator {
         circle.setFill(Color.RED);
         circle.setRadius(8.0);
         return circle;
+    }
+
+    public void legendCreator(double x, double y, Color color, String text){
+        Circle circle = new Circle();
+        circle.setCenterX(x);
+        circle.setCenterY(y);
+        circle.setFill(color);
+        circle.setRadius(8.0);
+        root.getChildren().add(circle);
+        Label label = new Label();
+        label.setText(text);
+        label.setLayoutX(x + 15);
+        label.setLayoutY(y - 8.0);
+        root.getChildren().add(label);
     }
 
     private Circle circleCreator(StationaryNetworkPoint stationaryNetworkPoint) {
@@ -72,6 +87,16 @@ public class ShapesCreator {
         return circle;
     }
 
+    private Circle rangeCreator(NetworkPoint networkPoint) {
+        Circle circle = new Circle();
+        circle.setRadius(networkPoint.getRange());
+        circle.setCenterX(networkPoint.getCurrentLocation().getX());
+        circle.setCenterY(networkPoint.getCurrentLocation().getY());
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStroke(Color.TRANSPARENT);
+        return circle;
+    }
+
     private Circle rangeCreator(EventSource eventSource) {
         Circle circle = new Circle();
         circle.setRadius(eventSource.getRange());
@@ -88,7 +113,19 @@ public class ShapesCreator {
         line.setStartY(route.getStartPoint().getY());
         line.setEndX(route.getEndPoint().getX());
         line.setEndY(route.getEndPoint().getY());
+        line.setStroke(Color.GRAY);
+        line.setStrokeWidth((route.getNumOfTLTE() + route.getNumOfTLTS())*5);
+        return line;
+    }
 
+    private Line laneCrator(Route route) {
+        Line line = new Line();
+        line.setStartX(route.getStartPoint().getX());
+        line.setStartY(route.getStartPoint().getY());
+        line.setEndX(route.getEndPoint().getX());
+        line.setEndY(route.getEndPoint().getY());
+        line.setStroke(Color.WHITE);
+        line.setStrokeWidth(1);
         return line;
     }
 
@@ -105,6 +142,10 @@ public class ShapesCreator {
         for (int i = 0; i < simulation.getMap().getRoutes().size(); i++) {
             Line line = lineCrator(simulation.getMap().getRoutes().get(i));
             root.getChildren().add(line);
+            if(simulation.getMap().getRoutes().get(i).getNumOfTLTS() > 0 && simulation.getMap().getRoutes().get(i).getNumOfTLTE() > 0) {
+                line = laneCrator(simulation.getMap().getRoutes().get(i));
+                root.getChildren().add(line);
+            }
         }
     }
 
@@ -142,8 +183,11 @@ public class ShapesCreator {
     public void setStationaryPointCircles(Simulation simulation) {
         for (int i = 0; i < simulation.getMap().getStationaryNetworkPoints().size(); i++) {
             Circle circle = circleCreator(simulation.getMap().getStationaryNetworkPoints().get(i));
+            Circle range = rangeCreator(simulation.getMap().getStationaryNetworkPoints().get(i));
             simulation.getStationaryCirclelist().add(circle);
+            simulation.getRangeRsuList().add(range);
             root.getChildren().add(circle);
+            root.getChildren().add(range);
         }
     }
 

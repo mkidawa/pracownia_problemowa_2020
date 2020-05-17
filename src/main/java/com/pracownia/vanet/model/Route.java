@@ -14,22 +14,17 @@ public class Route {
     /*------------------------ FIELDS REGION ------------------------*/
     private Point startPoint;
     private Point endPoint;
+    private double speedLimit;
+    private int numOfTLTE; //number of traffic lanes to route end
+    private int numOfTLTS; //number of traffic lanes to route start
 
     /*------------------------ METHODS REGION ------------------------*/
-    public Route() {
-        startPoint = new Point();
-        endPoint = new Point();
-    }
-
-    public Route(Point startPoint, Point endPoint) {
-        this.startPoint = startPoint;
-        this.endPoint = endPoint;
-    }
-
-    public Route(double xStartPoint, double yStartPoint, double xEndPoint, double yEndPoint) {
+    public Route(double xStartPoint, double yStartPoint, double xEndPoint, double yEndPoint, double speedLimit, int numOfTLTE, int numOfTLTS) {
         this.startPoint = new Point(xStartPoint, yStartPoint);
         this.endPoint = new Point(xEndPoint, yEndPoint);
-
+        this.speedLimit = speedLimit;
+        this.numOfTLTE = numOfTLTE;
+        this.numOfTLTS = numOfTLTS;
     }
 
     public double getDistance() {

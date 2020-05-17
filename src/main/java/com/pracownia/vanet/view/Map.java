@@ -31,7 +31,7 @@ public class Map {
     private List<Route> routes;
     private ObservableList<Vehicle> vehicles;
     private List<Crossing> crossings;
-    private List<EventSource> eventSources;
+    private ObservableList<EventSource> eventSources;
     private List<StationaryNetworkPoint> stationaryNetworkPoints;
     private ObservableList<Vehicle> hackers;
 
@@ -59,20 +59,20 @@ public class Map {
 
         hackers = FXCollections.observableArrayList();
         crossings = new ArrayList<>();
-        eventSources = new ArrayList<>();
+        eventSources = FXCollections.observableArrayList();
         stationaryNetworkPoints = new ArrayList<>();
         initMap();
 
     }
 
     private void initMap() {
-        routes.add(new Route(200.0, 100.0, 200.0, 700.0));
-        routes.add(new Route(400.0, 100.0, 400.0, 700.0));
-        routes.add(new Route(600.0, 100.0, 600.0, 700.0));
-        routes.add(new Route(800.0, 100.0, 800.0, 700.0));
-        routes.add(new Route(100.0, 200.0, 900.0, 200.0));
-        routes.add(new Route(100.0, 400.0, 900.0, 400.0));
-        routes.add(new Route(100.0, 600.0, 900.0, 600.0));
+        routes.add(new Route(200.0, 75.0, 200.0, 725.0, 4,2,1));
+        routes.add(new Route(400.0, 75.0, 400.0, 725.0, 4,3,2));
+        routes.add(new Route(600.0, 75.0, 600.0, 725.0, 4,2,2));
+        routes.add(new Route(800.0, 75.0, 800.0, 725.0, 4,1,3));
+        routes.add(new Route(75.0, 200.0, 925.0, 200.0, 4,1,2));
+        routes.add(new Route(200.0, 400.0, 800.0, 400.0, 4,3,0));
+        routes.add(new Route(75.0, 600.0, 925.0, 600.0, 4,3,3));
 
         crossings.add(new Crossing(new Point(200.0, 200.0), routes.get(0), routes.get(4)));
         crossings.add(new Crossing(new Point(200.0, 400.0), routes.get(0), routes.get(5)));
@@ -87,18 +87,25 @@ public class Map {
         crossings.add(new Crossing(new Point(800.0, 400.0), routes.get(3), routes.get(5)));
         crossings.add(new Crossing(new Point(800.0, 600.0), routes.get(3), routes.get(6)));
 
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(0, new Point(480.0, 210.0), 30.0));
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(1, new Point(260.0, 610.0), 30.0));
-        stationaryNetworkPoints.add(new StationaryNetworkPoint(2, new Point(480.0, 610.0), 30.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(0, new Point(200.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(1, new Point(200.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(3, new Point(200.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(4, new Point(400.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(5, new Point(400.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(6, new Point(400.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(7, new Point(600.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(8, new Point(600.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(9, new Point(600.0, 600.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(10, new Point(800.0, 200.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(11, new Point(800.0, 400.0), 110.0));
+        stationaryNetworkPoints.add(new StationaryNetworkPoint(12, new Point(800.0, 600.0), 110.0));
 
-        eventSources.add(new EventSource(0, "Car Accident", "Serious Car Accident",
-                new Point(250.0, 210.0), new Date(), 30.0, EventType.CAR_ACCIDENT));
 
-        eventSources.add(new EventSource(1, "Car Accident", "Serious Car Accident",
-                new Point(500.0, 410.0), new Date(), 30.0, EventType.CAR_ACCIDENT));
+        eventSources.add(new EventSource(1, "TRAFFIC_JAM", "Serious TRAFFIC_JAM",
+                new Point(500.0, 410.0), new Date(), 30.0, EventType.TRAFFIC_JAM));
 
-        eventSources.add(new EventSource(2, "Car Accident", "Serious Car Accident",
-                new Point(750.0, 610.0), new Date(), 30.0, EventType.CAR_ACCIDENT));
+        eventSources.add(new EventSource(2, "POLICE_CONTROL", "Serious POLICE_CONTROL",
+                new Point(750.0, 610.0), new Date(), 30.0, EventType.POLICE_CONTROL));
     }
 
     public List<Integer> deleteUnsafeVehicles() {
@@ -117,9 +124,14 @@ public class Map {
 
     public void addVehicles(int amount) {
         Random random = new Random();
-
-        for (int i = 0; i < amount; i++) {
-            vehicles.add(new Vehicle(routes.get(i % 5), i, 40.0, random.nextDouble() / 2.0 + 7));
+        int numOfVehicles = vehicles.size();
+        for (int i = numOfVehicles; i < amount + numOfVehicles; i++) {
+            vehicles.add(new Vehicle(
+                    routes.get(i % 5),
+                    i,
+                    40.0,
+                    random.nextDouble() * 4.0 + 2,
+                    random.nextInt(routes.get(i%5).getNumOfTLTE())+1));
         }
     }
 
@@ -130,9 +142,12 @@ public class Map {
     }
 
     public Vehicle addCopy() {
+        if (vehicles.size() == 0) {
+            throw new IllegalArgumentException();
+        }
         int r = new Random().nextInt(vehicles.size());
         Vehicle me = new Vehicle(vehicles.get(r).getRoute(), vehicles.get(r)
-                .getId(), vehicles.get(r).getRange(), vehicles.get(r).getSpeed());
+                .getId(), vehicles.get(r).getRange(), vehicles.get(r).getSpeed(), vehicles.get(r).getCurrentLane());
         vehicles.add(me);
 
         return me;
@@ -143,13 +158,17 @@ public class Map {
         int x = (int) (random.nextDouble() * 1000);
         int y = (int) (random.nextDouble() * 1000);
         Vehicle vehicle = new Vehicle(routes.get(99 % 5), fakeCarId, 40.0,
-                random.nextDouble() / 2.0 + 2);
+                random.nextDouble() / 2.0 + 2, 1);
         EventSource eventSource = new EventSource(fakeEventId, nameEvent, "Fake Car Accident",
                 new Point(x, y), new Date(), 20.0, EventType.CAR_ACCIDENT);
         vehicle.addFakeEvent(eventSource);
         vehicles.add(vehicle);
         fakeCarId--;
         fakeEventId--;
+    }
+
+    public void logCrossingHackerCount() {
+        crossings.forEach(Crossing::logHackerCount);
     }
 }
     
