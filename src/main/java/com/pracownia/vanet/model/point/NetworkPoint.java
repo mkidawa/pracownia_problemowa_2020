@@ -78,12 +78,13 @@ public abstract class NetworkPoint {
                 if (!flag) {
                     connectedVehicle.getCollectedEvents().add(event);
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from "
-                            + "Stationary to Vehicle " + connectedVehicle
-                            .getId());
-                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared "
-                            + "from Stationary to Vehicle " + connectedVehicle
-                            .getId());
+                    String msg = "[" + timeStamp + "] Event " + event.getId() +
+                            "["+event.getEventType().toString()+"]"
+                            + " shared from " + "Stationary to Vehicle " + connectedVehicle
+                            .getId();
+
+                    Logger.log(msg);
+                    System.out.println(msg);
                 }
             }
         }

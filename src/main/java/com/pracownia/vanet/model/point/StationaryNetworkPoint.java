@@ -65,16 +65,18 @@ public class StationaryNetworkPoint extends NetworkPoint {
                 increaseVehicleTrustLevel(v);
                 AntyBogus.getVehiclesToIncreaseTrustLevel().remove(v);
                 Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                Logger.log("[" + timeStamp + "] Increased trust level of Vehicle " + v.getId());
-                System.out.println("[" + timeStamp + "] Increased trust level of Vehicle " + v.getId());
+                String msg = "[" + timeStamp + "] Increased trust level of Vehicle " + v.getId();
+                Logger.log(msg);
+                System.out.println(msg);
 
             } else if (AntyBogus.getVehiclesToDecreaseTrustLevel().contains(v)) {
 
                 decreaseVehicleTrustLevel(v);
                 AntyBogus.getVehiclesToDecreaseTrustLevel().remove(v);
                 Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                Logger.log("[" + timeStamp + "] Decreased trust level of Vehicle " + v.getId());
-                System.out.println("[" + timeStamp + "] Decreased trust level of Vehicle " + v.getId());
+                String msg = "[" + timeStamp + "] Decreased trust level of Vehicle " + v.getId();
+                Logger.log(msg);
+                System.out.println(msg);
 
             }
         }

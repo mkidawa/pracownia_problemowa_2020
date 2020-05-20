@@ -40,6 +40,7 @@ public class ShapesCreator {
             main.getConnPointsField().setText(String.valueOf(vehicle.getConnectedPoints().size()));
             main.getConnVehField().setText(String.valueOf(vehicle.getConnectedVehicles().size()));
             main.getConnEventsField().setText(String.valueOf(vehicle.getCollectedEvents().size()));
+//            main.getDirectionField().setText(String.valueOf(vehicle.d));
         });
         return circle;
     }

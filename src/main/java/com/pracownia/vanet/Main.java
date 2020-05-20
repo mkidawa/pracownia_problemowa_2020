@@ -1,6 +1,7 @@
 package com.pracownia.vanet;
 
 import com.pracownia.vanet.model.Vehicle;
+import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.view.ShapesCreator;
 import com.pracownia.vanet.view.Simulation;
@@ -9,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -24,6 +26,8 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 public class Main extends Application {
@@ -36,6 +40,7 @@ public class Main extends Application {
     private TextField connEventsField;
     private TextField connVehField;
     private TextField connPointsField;
+    private TextField directionField;
     private Group root = new Group();
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
@@ -100,8 +105,39 @@ public class Main extends Application {
         TextField rangeAmountField = new TextField();
         Label rangeAmountLabel = new Label("Range");
         Label vehiclesAmountLabel = new Label("Vehicle Amount");
-        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(
-                "Car accident", "Speed camera", "Police control"));
+
+        String events[] = {"No event", "Car accident", "Speed camera", "Police control"};
+        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(events));
+
+        chooseFakeEvent.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue ov, Number value, Number new_value) {
+                //car accident
+                if(new_value.intValue() == 1){
+                    simulation.getMap().changeVehiclesSpeed(1);
+                }
+                //speed camera
+                if(new_value.intValue() == 2){
+                    simulation.getMap().changeVehiclesSpeed(3);
+                }
+                //police control
+                if(new_value.intValue() == 3){
+                    simulation.getMap().changeVehiclesSpeed(5);
+                }
+            }
+        });
+
+        simulation.getMap().getEventSources().addListener(new ListChangeListener<EventSource>(){
+            @Override
+            public void onChanged(Change<? extends EventSource> change) {
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        shapesCreator.setSourceEventCircles(simulation);
+                    }
+                });
+            }
+
+        });
 
         // Start stop simulation.
         Button startSimulation = new Button("Start simulation");
@@ -221,6 +257,14 @@ public class Main extends Application {
         connVehLabel.setLayoutX(950.0);
         connVehLabel.setLayoutY(730.0);
 
+        this.directionField = new TextField();
+        directionField.setLayoutX(950.0);
+        directionField.setLayoutY(760.0);
+
+        Label directionLabel = new Label("Direction");
+        directionLabel.setLayoutX(950.0);
+        directionLabel.setLayoutY(790.0);
+
         ListView<Vehicle> hackerVehiclesList = new ListView<>();
         hackerVehiclesList.setLayoutX(1125.0);
         hackerVehiclesList.setLayoutY(350.0);
@@ -246,7 +290,7 @@ public class Main extends Application {
         // Other stuff.
         chooseFakeEvent.setLayoutX(1130.0);
         chooseFakeEvent.setLayoutY(80.0);
-        chooseFakeEvent.setValue("Car accident");
+        chooseFakeEvent.setValue("No event");
 
         spawnFakedVeehicle.setLayoutX(1130.0);
         spawnFakedVeehicle.setLayoutY(110.0);
@@ -336,6 +380,8 @@ public class Main extends Application {
                         connEventsLabel,
                         connVehField,
                         connVehLabel,
+                        directionField,
+                        directionLabel,
                         startSimulation,
                         vehiclesAmountLabel,
                         rangeAmountLabel,
