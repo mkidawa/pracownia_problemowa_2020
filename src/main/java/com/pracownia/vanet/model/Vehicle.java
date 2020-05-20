@@ -34,6 +34,10 @@ public class Vehicle extends NetworkPoint {
     private int currentLane;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
     private List<HistoryPoint> log = new ArrayList<>();
+    private boolean detectedAsSybil = false;
+    @Getter
+    private LinkedList<RLUTag> linkTagChain = new LinkedList<>();
+
     private Date date;
     @Setter(AccessLevel.NONE)
     private Point previousCrossing;
@@ -71,13 +75,32 @@ public class Vehicle extends NetworkPoint {
     }
 
     public void setNotSafe(String mssg) {
-        if (this.safe == true) {
+        if (this.safe) {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
             String msg = "[" + timeStamp + "] Vehicle " + id + " : " + mssg;
             Logger.log(msg);
             System.out.println(msg);
             this.safe = false;
         }
+        this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
+        System.out.println("Spawned Vehicle #" + id + " at (" + currentLocation.getX() + "," + currentLocation.getY() + ")");
+    }
+
+    public void markAsSybil() {
+        Logger.log("Vehicle #" + id + " detected as sybil");
+        System.out.println("Vehicle #" + id + " detected as sybil");
+        detectedAsSybil = true;
+    }
+
+    public boolean isSybil() {
+        return detectedAsSybil;
+    }
+
+    private void obtainTagFromUnit(StationaryNetworkPoint rlu) {
+        if (linkTagChain.size() > 10) {
+            linkTagChain.removeLast();
+        }
+        linkTagChain.addFirst(rlu.obtainTag());
     }
 
     public void setDefaultSpeed(){
@@ -108,6 +131,12 @@ public class Vehicle extends NetworkPoint {
             if (distance(this.currentLocation, s.getCurrentLocation()) < range) {
                 if (!connectedPoints.contains(s)) {
                     connectedPoints.add(s);
+                    obtainTagFromUnit(s);
+                    if (!isSybil()) {
+                        System.out.print("Vehicle #" + id + "has tag chain: ");
+                        linkTagChain.forEach(System.out::print);
+                        System.out.println();
+                    }
                 }
             } else {
                 if (isPointInList(s, connectedPoints)) {

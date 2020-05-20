@@ -198,6 +198,7 @@ public class Simulation implements Runnable {
         for (StationaryNetworkPoint s : map.getStationaryNetworkPoints()) {
             s.update(map);
             s.checkIfChangeVehicleTrustLevel();
+            s.checkForSybilVehicles();
             try {
                 if (s.getConnectedVehicles().size() > 0) {
                     stationaryCirclelist.get(it).setFill(Color.ORANGE);

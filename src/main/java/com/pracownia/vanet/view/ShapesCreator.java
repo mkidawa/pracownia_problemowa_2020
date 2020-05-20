@@ -153,8 +153,9 @@ public class ShapesCreator {
         for (int i = simulation.getMap().getVehicles().size() - amount; i < simulation.getMap()
                 .getVehicles()
                 .size(); i++) {
-            Circle circle = circleCreator(simulation.getMap().getVehicles().get(i));
-            Circle rangeCircle = rangeCreator(simulation.getMap().getVehicles().get(i));
+            Vehicle vehicle = simulation.getMap().getVehicles().get(i);
+            Circle circle = circleCreator(vehicle);
+            Circle rangeCircle = rangeCreator(vehicle);
             simulation.getCircleList().add(circle);
             simulation.getRangeList().add(rangeCircle);
             root.getChildren().add(rangeCircle);
