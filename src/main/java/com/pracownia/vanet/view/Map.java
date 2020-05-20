@@ -1,5 +1,6 @@
 package com.pracownia.vanet.view;
 
+import com.pracownia.vanet.model.SybilVehicle;
 import com.pracownia.vanet.model.Crossing;
 import com.pracownia.vanet.model.Route;
 import com.pracownia.vanet.model.Vehicle;
@@ -160,6 +161,13 @@ public class Map {
 
     public void logCrossingHackerCount() {
         crossings.forEach(Crossing::logHackerCount);
+    }
+
+    public void addSybilAttacker(int amount)
+    {
+        Random random = new Random();
+        int id = Math.abs(random.nextInt() % 1000) + 1000;
+        vehicles.add(new SybilVehicle(routes.get(id % 5), id, 40.0, random.nextDouble() * 4.0 + 2,random.nextInt(routes.get(id%5).getNumOfTLTE())+1, amount));
     }
 }
     
