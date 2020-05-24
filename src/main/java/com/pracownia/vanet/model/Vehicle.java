@@ -35,6 +35,7 @@ public class Vehicle extends NetworkPoint {
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
     private List<HistoryPoint> log = new ArrayList<>();
     private boolean detectedAsSybil = false;
+    private Timestamp detectionTime;
     @Getter
     private LinkedList<RLUTag> linkTagChain = new LinkedList<>();
 
@@ -80,10 +81,19 @@ public class Vehicle extends NetworkPoint {
             String msg = "[" + timeStamp + "] Vehicle " + id + " : " + mssg;
             Logger.log(msg);
             System.out.println(msg);
+            setDetectionTime(timeStamp);
             this.safe = false;
         }
         this.currentLocation = new Point(route.getStartPoint().getX(), route.getStartPoint().getY());
         System.out.println("Spawned Vehicle #" + id + " at (" + currentLocation.getX() + "," + currentLocation.getY() + ")");
+    }
+
+    public Timestamp getDetectionTime() {
+        return detectionTime;
+    }
+
+    public void setDetectionTime(Timestamp detectionTime) {
+        this.detectionTime = detectionTime;
     }
 
     public void markAsSybil() {

@@ -1,5 +1,6 @@
 package com.pracownia.vanet;
 
+import com.pracownia.vanet.exception.FileOperationException;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.util.Logger;
@@ -23,6 +24,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import com.pracownia.vanet.util.csv.CsvRecord;
+import com.pracownia.vanet.util.csv.FileWriterCsv;
+import com.pracownia.vanet.util.csv.CrossingPoint;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -155,6 +164,31 @@ public class Main extends Application {
             simulation.setSimulationRunning(false);
             simulation.logCrossingHackerCount();
             stopTimer();
+
+            try {
+                List<Double> timeFromStartToDetection = new ArrayList<>();
+                simulation.getMap().getVehicles().forEach((it) -> {
+                    if(!it.isSafe()) {
+                        double timeInMillis = (it.getDetectionTime().getTime() - startTime) / 1000.0;
+                        timeFromStartToDetection.add(timeInMillis);
+                    }
+                });
+                Collections.sort(timeFromStartToDetection);
+
+                List<CrossingPoint> crossingPoints = new ArrayList<>();
+                simulation.getMap().getCrossings().forEach((it) -> {
+                    crossingPoints.add(new CrossingPoint(it.getLocation().getX(),
+                            it.getLocation().getY(), it.getHackers().size()));
+                });
+
+                double attackerToOrdinaryRatio = (double) simulation.getMap().getNrOfFakeVehicles() / (simulation.getMap().getNrOfNormalVehicles() + simulation.getMap().getNrOfFakeVehicles());
+                CsvRecord csvRecord = new CsvRecord(timeFromStartToDetection,
+                        timeFromStartToDetection.get(timeFromStartToDetection.size() - 1), simulation.getMap().getNrOfNormalVehicles(), simulation.getMap().getNrOfFakeVehicles(), attackerToOrdinaryRatio,
+                        crossingPoints);
+                new FileWriterCsv().writeCsvFile("Summary", csvRecord);
+            } catch (FileOperationException ex) {
+                ex.printStackTrace();
+            }
         });
 
         Button addHackerVehicle = new Button("Add hacker vehicle");
