@@ -155,16 +155,30 @@ public class AntyBogus {
                 for (Double item : deltaV) {
                     if (item < 1) { //We need to find good value to check if it is true accident or hacked
                         result = true;
+                        break;
                     }
                 }
-
+                break;
             }
             case POLICE_CONTROL: {
-
+                //TODO: Finish calculations
+                int counter = 0;
+                for (HistoryPoint item : logs) {
+                    if (vehicle.getRoute().getSpeedLimit() > item.getSpeed()) { //We need to find good value to check if it is true accident or hacked
+                        counter++;
+                    }
+                }
+                result = counter > 10;
                 break;
             }
             case TRAFFIC_JAM: {
-
+                int counter = 0;
+                for (HistoryPoint item : logs) {
+                    if (vehicle.getRoute().getSpeedLimit() > item.getSpeed()) { //We need to find good value to check if it is true accident or hacked
+                        counter++;
+                    }
+                }
+                result = counter > 20;
                 break;
             }
         }
