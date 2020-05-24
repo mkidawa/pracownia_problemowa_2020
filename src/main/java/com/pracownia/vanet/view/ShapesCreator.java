@@ -40,7 +40,6 @@ public class ShapesCreator {
             main.getConnPointsField().setText(String.valueOf(vehicle.getConnectedPoints().size()));
             main.getConnVehField().setText(String.valueOf(vehicle.getConnectedVehicles().size()));
             main.getConnEventsField().setText(String.valueOf(vehicle.getCollectedEvents().size()));
-//            main.getDirectionField().setText(String.valueOf(vehicle.d));
         });
         return circle;
     }
@@ -153,9 +152,8 @@ public class ShapesCreator {
         for (int i = simulation.getMap().getVehicles().size() - amount; i < simulation.getMap()
                 .getVehicles()
                 .size(); i++) {
-            Vehicle vehicle = simulation.getMap().getVehicles().get(i);
-            Circle circle = circleCreator(vehicle);
-            Circle rangeCircle = rangeCreator(vehicle);
+            Circle circle = circleCreator(simulation.getMap().getVehicles().get(i));
+            Circle rangeCircle = rangeCreator(simulation.getMap().getVehicles().get(i));
             simulation.getCircleList().add(circle);
             simulation.getRangeList().add(rangeCircle);
             root.getChildren().add(rangeCircle);

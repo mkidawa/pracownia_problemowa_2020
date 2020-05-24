@@ -2,7 +2,6 @@ package com.pracownia.vanet;
 
 import com.pracownia.vanet.exception.FileOperationException;
 import com.pracownia.vanet.model.Vehicle;
-import com.pracownia.vanet.model.event.EventSource;
 import com.pracownia.vanet.util.Logger;
 import com.pracownia.vanet.util.csv.CrossingPoint;
 import com.pracownia.vanet.util.csv.CsvRecord;
@@ -14,7 +13,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -47,7 +45,6 @@ public class Main extends Application {
     private TextField connEventsField;
     private TextField connVehField;
     private TextField connPointsField;
-    private TextField directionField;
     private Group root = new Group();
     private ShapesCreator shapesCreator;
     private boolean isRangeRendered = false;
@@ -112,39 +109,8 @@ public class Main extends Application {
         TextField rangeAmountField = new TextField();
         Label rangeAmountLabel = new Label("Range");
         Label vehiclesAmountLabel = new Label("Vehicle Amount");
-
-        String events[] = {"No event", "Car accident", "Speed camera", "Police control"};
-        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(events));
-
-        chooseFakeEvent.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue ov, Number value, Number new_value) {
-                //car accident
-                if(new_value.intValue() == 1){
-                    simulation.getMap().changeVehiclesSpeed(1);
-                }
-                //speed camera
-                if(new_value.intValue() == 2){
-                    simulation.getMap().changeVehiclesSpeed(3);
-                }
-                //police control
-                if(new_value.intValue() == 3){
-                    simulation.getMap().changeVehiclesSpeed(5);
-                }
-            }
-        });
-
-        simulation.getMap().getEventSources().addListener(new ListChangeListener<EventSource>(){
-            @Override
-            public void onChanged(Change<? extends EventSource> change) {
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        shapesCreator.setSourceEventCircles(simulation);
-                    }
-                });
-            }
-
-        });
+        ChoiceBox chooseFakeEvent = new ChoiceBox(FXCollections.observableArrayList(
+                "Car accident", "Speed camera", "Police control"));
 
         // Start stop simulation.
         Button startSimulation = new Button("Start simulation");
@@ -227,20 +193,6 @@ public class Main extends Application {
             simulation.deleteUnsafeCircles();
         });
 
-        TextField amountOfDevices = new TextField();
-        amountOfDevices.setLayoutX(1130.0);
-        amountOfDevices.setLayoutY(520.0);
-        amountOfDevices.setText("10");
-
-        Button addSybilAttackerButton = new Button("Add sybil attacker");
-        addSybilAttackerButton.setLayoutX(1130.0);
-        addSybilAttackerButton.setLayoutY(460.0);
-
-
-        Label amountOfSybilAttackersLabel = new Label("Amount of devices to fake");
-        amountOfSybilAttackersLabel.setLayoutX(1130.0);
-        amountOfSybilAttackersLabel.setLayoutY(500.0);
-
         // Vehicle informations.
         this.trustLevelField = new TextField();
         trustLevelField.setLayoutX(950.0);
@@ -290,20 +242,13 @@ public class Main extends Application {
         connVehLabel.setLayoutX(950.0);
         connVehLabel.setLayoutY(730.0);
 
-        this.directionField = new TextField();
-        directionField.setLayoutX(950.0);
-        directionField.setLayoutY(760.0);
-
-        Label directionLabel = new Label("Direction");
-        directionLabel.setLayoutX(950.0);
-        directionLabel.setLayoutY(790.0);
-
         ListView<Vehicle> hackerVehiclesList = new ListView<>();
         hackerVehiclesList.setLayoutX(1125.0);
         hackerVehiclesList.setLayoutY(350.0);
         hackerVehiclesList.setMaxHeight(100);
         hackerVehiclesList.setMaxWidth(175.0);
         hackerVehiclesList.setItems(simulation.getMap().getVehicles());
+        //.filtered(x->!x.safe)
 
         seeThrough = new CheckBox("Widac?");
         seeThrough.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -323,7 +268,7 @@ public class Main extends Application {
         // Other stuff.
         chooseFakeEvent.setLayoutX(1130.0);
         chooseFakeEvent.setLayoutY(80.0);
-        chooseFakeEvent.setValue("No event");
+        chooseFakeEvent.setValue("Car accident");
 
         spawnFakedVeehicle.setLayoutX(1130.0);
         spawnFakedVeehicle.setLayoutY(110.0);
@@ -369,12 +314,6 @@ public class Main extends Application {
             }
         });
 
-        addSybilAttackerButton.setOnAction(e -> {
-            simulation.getMap().addSybilAttacker(Integer.valueOf(amountOfDevices.getText()));
-            shapesCreator.setVehicleCircles(simulation, 1);
-            shapesCreator.setLabels(simulation, 1);
-        });
-
         spawnFakedVeehicle.setOnAction(e -> {
             Integer numberOfFakeVehicle = Integer.valueOf(spawnFakedVeehicleTextField.getText());
             for (int i = 0; i < numberOfFakeVehicle; i++) {
@@ -412,8 +351,6 @@ public class Main extends Application {
                         connEventsLabel,
                         connVehField,
                         connVehLabel,
-                        directionField,
-                        directionLabel,
                         startSimulation,
                         vehiclesAmountLabel,
                         rangeAmountLabel,
@@ -423,9 +360,6 @@ public class Main extends Application {
                         addHackerVehicle,
                         clearNotSafe,
                         hackerVehiclesList,
-                        addSybilAttackerButton,
-                        amountOfDevices,
-                        amountOfSybilAttackersLabel,
                         seeThrough);
     }
 }

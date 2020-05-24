@@ -50,10 +50,6 @@ public class EventSource {
         return event;
     }
 
-    public Point getLocalization(){
-        return this.localization;
-    }
-
     public boolean isInRange(Point vehicleLocalisation) {
         Double distance = Math.sqrt(Math.pow(localization.getX() - vehicleLocalisation.getX(), 2) +
                 Math.pow(localization.getY() - vehicleLocalisation.getY(), 2));
