@@ -1,5 +1,6 @@
 package com.pracownia.vanet.model.point;
 
+import com.pracownia.vanet.model.SybilVehicle;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.Event;
 import com.pracownia.vanet.util.Logger;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,7 +21,7 @@ public abstract class NetworkPoint {
 
     /*------------------------ FIELDS REGION ------------------------*/
     protected int id;
-    protected Point currentLocation = new Point();
+    public Point currentLocation = new Point();
     protected double range;
     protected List<Vehicle> connectedVehicles = new ArrayList<>();
     protected List<Event> collectedEvents = new ArrayList<>();
@@ -37,7 +39,16 @@ public abstract class NetworkPoint {
     }
 
     public void updateConnectedPoints(Map map) {
-        for (Vehicle v : map.getVehicles()) {
+        List<Vehicle> vehiclesToCheck = new ArrayList<>(map.getVehicles());
+
+        List<Vehicle> fakes = vehiclesToCheck.stream()
+                .filter(v -> v instanceof SybilVehicle)
+                .map(v -> ((SybilVehicle)v).getFakeVehicles())
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        vehiclesToCheck.addAll(fakes);
+
+        for (Vehicle v : vehiclesToCheck) {
             if (v == this) {
                 continue;
             }
@@ -67,12 +78,13 @@ public abstract class NetworkPoint {
                 if (!flag) {
                     connectedVehicle.getCollectedEvents().add(event);
                     Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-                    Logger.log("[" + timeStamp + "] Event " + event.getId() + " shared from "
-                            + "Stationary to Vehicle " + connectedVehicle
-                            .getId());
-                    System.out.println("[" + timeStamp + "] Event " + event.getId() + " shared "
-                            + "from Stationary to Vehicle " + connectedVehicle
-                            .getId());
+                    String msg = "[" + timeStamp + "] Event " + event.getId() +
+                            "["+event.getEventType().toString()+"]"
+                            + " shared from " + "Stationary to Vehicle " + connectedVehicle
+                            .getId();
+
+                    Logger.log(msg);
+                    System.out.println(msg);
                 }
             }
         }
