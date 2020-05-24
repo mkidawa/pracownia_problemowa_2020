@@ -33,6 +33,8 @@ public class Vehicle extends NetworkPoint {
     private boolean direction = true; // True if from starting point to end point
     private int currentLane;
     private List<StationaryNetworkPoint> connectedPoints = new ArrayList<>();
+  
+    private Timestamp detectionTime;
     private List<HistoryPoint> log = new ArrayList<>();
     private boolean detectedAsSybil = false;
     @Getter
@@ -77,6 +79,9 @@ public class Vehicle extends NetworkPoint {
     public void setNotSafe(String mssg) {
         if (this.safe) {
             Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
+            Logger.log("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            System.out.println("[" + timeStamp + "] Vehicle " + id + " : " + mssg);
+            setDetectionTime(timeStamp);
             String msg = "[" + timeStamp + "] Vehicle " + id + " : " + mssg;
             Logger.log(msg);
             System.out.println(msg);
@@ -109,6 +114,14 @@ public class Vehicle extends NetworkPoint {
 
     public int getLane(){
         return this.currentLane;
+    }
+
+    public Timestamp getDetectionTime() {
+        return detectionTime;
+    }
+
+    public void setDetectionTime(Timestamp detectionTime) {
+        this.detectionTime = detectionTime;
     }
 
     @Override
