@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +44,7 @@ public class Main extends Application {
 
     /*------------------------ FIELDS REGION ------------------------*/
     private CheckBox seeThrough;
+    private CheckBox accident;
     private TextField trustLevelField;
     private TextField speedField;
     private TextField vehIdField;
@@ -122,25 +124,26 @@ public class Main extends Application {
             @Override
             public void changed(ObservableValue ov, Number value, Number new_value) {
                 //car accident
-                if(new_value.intValue() == 1){
+                if (new_value.intValue() == 1) {
                     simulation.getMap().changeVehiclesSpeed(1);
                 }
                 //speed camera
-                if(new_value.intValue() == 2){
+                if (new_value.intValue() == 2) {
                     simulation.getMap().changeVehiclesSpeed(3);
                 }
                 //police control
-                if(new_value.intValue() == 3){
+                if (new_value.intValue() == 3) {
                     simulation.getMap().changeVehiclesSpeed(5);
                 }
             }
         });
 
-        simulation.getMap().getEventSources().addListener(new ListChangeListener<EventSource>(){
+        simulation.getMap().getEventSources().addListener(new ListChangeListener<EventSource>() {
             @Override
             public void onChanged(Change<? extends EventSource> change) {
                 Platform.runLater(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         shapesCreator.setSourceEventCircles(simulation);
                     }
                 });
@@ -168,7 +171,7 @@ public class Main extends Application {
             try {
                 List<Double> timeFromStartToDetection = new ArrayList<>();
                 simulation.getMap().getVehicles().forEach((it) -> {
-                    if(!it.isSafe()) {
+                    if (!it.isSafe()) {
                         double timeInMillis = (it.getDetectionTime().getTime() - startTime) / 1000.0;
                         timeFromStartToDetection.add(timeInMillis);
                     }
@@ -196,7 +199,7 @@ public class Main extends Application {
         addHackerVehicle.setLayoutY(200.00);
         addHackerVehicle.setOnAction(e -> {
             try {
-            shapesCreator.setCopyCircle(simulation.getMap().addCopy());
+                shapesCreator.setCopyCircle(simulation.getMap().addCopy());
             } catch (IllegalArgumentException exception) {
                 Logger.log("Nothing to copy");
                 System.out.println("Nothing to copy");
@@ -241,6 +244,18 @@ public class Main extends Application {
         Label amountOfSybilAttackersLabel = new Label("Amount of devices to fake");
         amountOfSybilAttackersLabel.setLayoutX(1130.0);
         amountOfSybilAttackersLabel.setLayoutY(500.0);
+
+        accident = new CheckBox("Accidents events");
+        accident.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue,
+                                Boolean aBoolean, Boolean t1) {
+                simulation.setAccidents(t1);
+            }
+        });
+        accident.setSelected(true);
+        accident.setLayoutX(1130.0);
+        accident.setLayoutY(560.0);
 
         // Vehicle informations.
         this.trustLevelField = new TextField();
@@ -350,13 +365,13 @@ public class Main extends Application {
         vehiclesAmountField.setLayoutY(240.0);
         vehiclesAmountField.setText("10");
 
-        shapesCreator.legendCreator(100,750, Color.BLACK, "Vehicle - wrong traffic lane");
-        shapesCreator.legendCreator(100,775, Color.AQUA, "Vehicle - traffic lane 1");
-        shapesCreator.legendCreator(100,800, Color.GOLD, "Vehicle - traffic lane 2");
-        shapesCreator.legendCreator(100,825, Color.CORAL, "Vehicle - traffic lane 3");
-        shapesCreator.legendCreator(300,750, Color.DARKRED, "Vehicle - too fast");
-        shapesCreator.legendCreator(300,775, Color.BLUE, "Stationary network point");
-        shapesCreator.legendCreator(300,800, Color.RED, "Route event");
+        shapesCreator.legendCreator(100, 750, Color.BLACK, "Vehicle - wrong traffic lane");
+        shapesCreator.legendCreator(100, 775, Color.AQUA, "Vehicle - traffic lane 1");
+        shapesCreator.legendCreator(100, 800, Color.GOLD, "Vehicle - traffic lane 2");
+        shapesCreator.legendCreator(100, 825, Color.CORAL, "Vehicle - traffic lane 3");
+        shapesCreator.legendCreator(300, 750, Color.DARKRED, "Vehicle - too fast");
+        shapesCreator.legendCreator(300, 775, Color.BLUE, "Stationary network point");
+        shapesCreator.legendCreator(300, 800, Color.RED, "Route event");
 
 
         changeRangeButton.setOnAction(e -> simulation.changeVehiclesRanges(Double.parseDouble(rangeAmountField
@@ -428,7 +443,8 @@ public class Main extends Application {
                         addSybilAttackerButton,
                         amountOfDevices,
                         amountOfSybilAttackersLabel,
-                        seeThrough);
+                        seeThrough,
+                        accident);
     }
 }
     

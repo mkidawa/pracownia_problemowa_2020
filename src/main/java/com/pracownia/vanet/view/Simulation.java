@@ -1,5 +1,6 @@
 package com.pracownia.vanet.view;
 
+import com.pracownia.vanet.algorithm.AntyBogus;
 import com.pracownia.vanet.model.Crossing;
 import com.pracownia.vanet.model.Vehicle;
 import com.pracownia.vanet.model.event.Event;
@@ -36,6 +37,7 @@ public class Simulation implements Runnable {
     private List<Circle> rangeRsuList;
     private List<Label> labelList;
     private List<Circle> stationaryCirclelist;
+    private boolean accidents = true;
     private static double DISTANCE_FOR_CRASH = 10.0;
 
     /*------------------------ METHODS REGION ------------------------*/
@@ -60,8 +62,9 @@ public class Simulation implements Runnable {
                 checkVehicleEventSource();
                 updateStationaryPoints();
                 checkCopies();
-                checkAccident();
-
+                if (accidents) {
+                    checkAccident();
+                }
                 //showVehiclesConnected();
             }
             try {
@@ -164,8 +167,10 @@ public class Simulation implements Runnable {
                             return;
                         }
                     }
+                    if (!AntyBogus.analieseVehicle(vehicle, eventSource.getEvent())) {
+                        vehicle.getCollectedEvents().add(eventSource.getEvent());
+                    }
 
-                    vehicle.getCollectedEvents().add(eventSource.getEvent());
                 }
             }
         }
