@@ -174,7 +174,7 @@ public class AntyBogus {
             case TRAFFIC_JAM: {
                 int counter = 0;
                 for (HistoryPoint item : logs) {
-                    if (vehicle.getRoute().getSpeedLimit() > item.getSpeed()) { //We need to find good value to check if it is true accident or hacked
+                    if (vehicle.getRoute().getSpeedLimit() * 0.5 > item.getSpeed()) { //We need to find good value to check if it is true accident or hacked
                         counter++;
                     }
                 }
