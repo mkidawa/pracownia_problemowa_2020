@@ -46,7 +46,7 @@ public class CsvRecord {
         for (int i = 0; i < crossingPoints.size(); i++) {
             list.add("X");
             list.add("Y");
-            list.add("attackerNumber");
+            list.add("attackerNumber" + i);
         }
 
         return list.stream().toArray(String[]::new);

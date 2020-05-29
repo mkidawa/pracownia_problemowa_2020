@@ -34,13 +34,7 @@ COLUMNS = [
 
 # DEF ------------------------------------------------------------------------ #
 def read_files() -> None:
-    begin: str = "\\begin{table}[]\n" \
-                 + "\\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}\n" \
-                 + "\\hline\n"
-    end: str = "\n\\end{tabular}\n" \
-               + "\\end{table}\n"
-
-    results: str = begin
+    results: str = ""
     for it in LOCATION_FILE_NAMES:
         primitive_data: DataFrame = read_csv(it, usecols=COLUMNS)
         primitive_data.to_csv("temp.csv", index=False, header=False)
@@ -52,7 +46,6 @@ def read_files() -> None:
         res = res.replace(",", " & ")
         results += res
 
-    results += end
     with open("final_table.txt", "w") as file:
         file.write(results)
 
